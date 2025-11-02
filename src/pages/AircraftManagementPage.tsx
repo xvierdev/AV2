@@ -1,153 +1,139 @@
-import { useState, type FormEvent, type ChangeEvent } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth'; // Hook atualizado
+import { useAuth } from '../context/useAuth';
 import { getAircraftsForUser, addAircraft } from '../utils/mockAircrafts';
+import { getAllUsers } from '../utils/mockUsers';
+import { AddAircraftModal } from '../components/AddAircraftModal/AddAircraftModal';
 import type { AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
 import pageStyles from './AircraftManagementPage.module.css';
 
 function AircraftManagementPage() {
-    // O useAuth retorna o usuário tipado
-    const { user, USER_LEVELS } = useAuth();
+    // --- Hooks de Estado e Roteamento ---
+    const { user, USER_LEVELS, logout } = useAuth();
     const navigate = useNavigate();
 
-
-    // Obter a lista de aeronaves baseada nas permissões do usuário logado
-    const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>(() => getAircraftsForUser(user!));
-
-    // Permissões
-    const isAdmin = user!.level === USER_LEVELS.ADMIN;
-    // Engenheiro ou superior (Admin)
-    const isEngineerOrHigher = user!.level === USER_LEVELS.ADMIN || user!.level === USER_LEVELS.ENGINEER;
-
-    // Estado para o modal de Adicionar Aeronave
+    // Estado para a lista de aeronaves exibida na tela
+    const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>([]);
+    // Estado para controlar a visibilidade do modal de criação
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [newAircraftData, setNewAircraftData] = useState<NewAircraftData>({
-        model: '', type: '', capacity: 0, range: 0, clientName: '', deliveryDeadline: ''
-    });
 
-    const handleCreateAircraft = () => {
-        if (!isAdmin) return; // Segurança extra
-        setIsModalOpen(true);
-    };
+    // --- Lógica de Dados e Permissões ---
 
-    // Tipando o evento de mudança
-    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setNewAircraftData(prev => ({
-            ...prev,
-            // O TypeScript garante a segurança do campo 'name' aqui
-            [name]: (name === 'capacity' || name === 'range') ? Number(value) : value
-        }));
-    };
-
-    // Tipando o evento de submissão
-    const handleSaveAircraft = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (!isAdmin) return;
-
-        // Validação de campos obrigatórios
-        if (!newAircraftData.model || !newAircraftData.type || newAircraftData.capacity <= 0 || newAircraftData.range <= 0) {
-            alert("Por favor, preencha Modelo, Tipo, Capacidade e Alcance.");
-            return;
+    // Carrega a lista de aeronaves quando o componente é montado ou o usuário muda
+    useEffect(() => {
+        if (user) {
+            setAircrafts(getAircraftsForUser(user));
         }
+    }, [user]);
+
+    // Otimiza o cálculo da lista de engenheiros para passar ao modal
+    const engineers = useMemo(() => {
+        return getAllUsers().filter(u => u.level === USER_LEVELS.ENGINEER);
+    }, [USER_LEVELS.ENGINEER]);
+
+    // Flags de permissão para limpar o JSX
+    const isAdmin = user?.level === USER_LEVELS.ADMIN;
+
+    // --- Handlers (Funções de Ação) ---
+
+    // Função passada para o modal, que será chamada no submit
+    const handleAddAircraft = (data: NewAircraftData) => {
+        if (!user) return; // Guarda de segurança
 
         try {
-            const addedAircraft = addAircraft(newAircraftData, user!.id);
-            alert(`Aeronave ${addedAircraft.id} adicionada com sucesso!`);
+            const addedAircraft = addAircraft(data, user.id);
+            // O criador (admin) sempre pode editar a aeronave que criou
+            const newAircraftWithPermissions = { ...addedAircraft, canEdit: true };
 
-            // 2. ATUALIZE O ESTADO EM VEZ DE RECARREGAR A PÁGINA
-            const newAircraftWithPermissions = { ...addedAircraft, canEdit: true }; // Admin que cria sempre pode editar
+            // Atualiza o estado para a UI reagir instantaneamente
             setAircrafts(prevAircrafts => [...prevAircrafts, newAircraftWithPermissions]);
-            setIsModalOpen(false);
+
+            alert(`Aeronave "${addedAircraft.model}" adicionada com sucesso!`);
         } catch (error) {
-            alert("Erro ao adicionar aeronave. Consulte o console.");
+            alert("Ocorreu um erro ao adicionar a aeronave. Consulte o console.");
             console.error(error);
         }
     };
 
-    // Ações de Navegação
+    // Navega para a página de detalhes da aeronave selecionada
     const handleSelectAircraft = (id: string) => {
         navigate(`/aeronaves/${id}`);
     };
 
+    // Navega para a página de gerenciamento de usuários
     const handleManageUsers = () => {
-        // Rota protegida por ProtectedRoute, mas o botão só aparece para Admin
         if (isAdmin) {
-            navigate('/funcionarios');
+            navigate('/usuarios'); // '/usuarios' é a rota oficial definida no App.tsx
         }
     };
 
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
+    // --- Renderização ---
+
+    // Guarda de carregamento enquanto o usuário ainda não foi carregado
+    if (!user) {
+        return <div className={pageStyles.container}>Carregando informações...</div>;
+    }
 
     return (
         <div className={pageStyles.container}>
-            <div className={pageStyles.pageHeader}>
-                <h1>✈️ Gerenciamento de Aeronaves</h1>
-                <div className={pageStyles.actionsBar}>
-                    {isAdmin && (
-                        <button onClick={handleManageUsers} /* ... */>
+            <header className={pageStyles.header}>
+                <h1>✈️ Aerocode - Gerenciamento de Aeronaves</h1>
+                <div className={pageStyles.userInfo}>
+                    {/* Reutilizando o Header global, esta parte é opcional mas pode ser útil */}
+                    <span className={pageStyles.userName}>Usuário: {user.name}</span>
+                    <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button>
+                </div>
+            </header>
+
+            <div className={pageStyles.actionsBar}>
+                {/* Botões de ação disponíveis apenas para administradores */}
+                {isAdmin && (
+                    <>
+                        <button onClick={handleManageUsers} className={pageStyles.actionButton} style={{ backgroundColor: '#17a2b8' }}>
                             Gerenciar Funcionários
                         </button>
-                    )}
-                    {isAdmin && (
-                        <button onClick={handleCreateAircraft} /* ... */>
+                        <button onClick={() => setIsModalOpen(true)} className={pageStyles.actionButton}>
                             + Nova Aeronave
                         </button>
-                    )}
-                </div>
+                    </>
+                )}
             </div>
 
             <main className={pageStyles.content}>
-                <h2>Lista de Projetos de Aeronaves</h2>
+                <h2>Lista de Projetos Ativos</h2>
                 <div className={pageStyles.cardContainer}>
                     {aircrafts.map((a) => (
-                        // A cor da borda muda se o usuário tiver permissão de edição
-                        <div key={a.id} className={pageStyles.card} style={{ borderColor: a.canEdit && isEngineerOrHigher ? '#007bff' : '#ccc' }}>
+                        <div key={a.id} className={pageStyles.card} onClick={() => handleSelectAircraft(a.id)}>
                             <h3 className={pageStyles.cardTitle}>{a.model} ({a.id})</h3>
                             <p><strong>Tipo:</strong> {a.type}</p>
                             <p><strong>Cliente:</strong> {a.clientName || 'N/A'}</p>
                             <p><strong>Status:</strong> <span className={pageStyles.statusBadge}>{a.status}</span></p>
 
-                            <button
-                                onClick={() => handleSelectAircraft(a.id)}
-                                className={pageStyles.detailsButton}
-                            >
-                                Detalhes da Produção
-                            </button>
-
-                            {/* Indicador de Permissão de Edição */}
-                            {a.canEdit && isEngineerOrHigher && (
+                            {/* Indicador visual de permissão */}
+                            {a.canEdit && user.level !== 'operador' && (
                                 <span className={pageStyles.editTag}>Pode Editar</span>
                             )}
-                            {!a.canEdit && isEngineerOrHigher && (
-                                <span className={pageStyles.editTag} style={{ backgroundColor: '#dc3545' }}>Apenas Consulta</span>
+                            {!a.canEdit && user.level === 'engenheiro' && (
+                                <span className={pageStyles.editTag} style={{ backgroundColor: '#6c757d' }}>Apenas Consulta</span>
                             )}
                         </div>
                     ))}
                 </div>
             </main>
 
-            {/* Modal de Adicionar Aeronave (Apenas Admin) */}
-            {isModalOpen && isAdmin && (
-                <div className={pageStyles.modalOverlay}>
-                    <form onSubmit={handleSaveAircraft} className={pageStyles.modalContent}>
-                        <h3>Adicionar Nova Aeronave</h3>
-                        <p>Atributos obrigatórios em **negrito**.</p>
-
-                        <input name="model" required placeholder="**Modelo** (ex: A320 Neo)" onChange={handleInputChange} className={pageStyles.modalInput} />
-                        <input name="type" required placeholder="**Tipo** (ex: Comercial/Militar)" onChange={handleInputChange} className={pageStyles.modalInput} />
-                        <input name="capacity" type="number" required placeholder="**Capacidade** de Passageiros/Tripulação" onChange={handleInputChange} className={pageStyles.modalInput} min="1" />
-                        <input name="range" type="number" required placeholder="**Alcance** (km)" onChange={handleInputChange} className={pageStyles.modalInput} min="1" />
-
-                        {/* Campos Opcionais */}
-                        <input name="clientName" placeholder="Nome do Cliente (Opcional)" onChange={handleInputChange} className={pageStyles.modalInput} />
-                        <input name="deliveryDeadline" type="date" placeholder="Prazo Estimado de Entrega (Opcional)" onChange={handleInputChange} className={pageStyles.modalInput} />
-
-                        <div className={pageStyles.modalActions}>
-                            <button type="button" onClick={() => setIsModalOpen(false)} className={pageStyles.actionButton} style={{ backgroundColor: '#6c757d' }}>Cancelar</button>
-                            <button type="submit" className={pageStyles.actionButton}>Salvar Aeronave</button>
-                        </div>
-                    </form>
-                </div>
+            {/* O novo modal é renderizado aqui, passando as props necessárias */}
+            {isAdmin && (
+                <AddAircraftModal
+                    isOpen={isModalOpen}
+                    onClose={() => setIsModalOpen(false)}
+                    onSubmit={handleAddAircraft}
+                    engineers={engineers}
+                />
             )}
         </div>
     );

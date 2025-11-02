@@ -220,4 +220,24 @@
     opacity: 0.5;
 }
 
-/* Estilos de Modal de Nova Tarefa (reutilizando .modalOverlay, .modalContent, etc. existentes) */
+.EmAndamento {
+    color: #ffc107;
+    /* Amarelo/Laranja */
+    font-weight: bold;
+}
+
+/* Também adicione esta classe ao CSS da tabela de tarefas para o status */
+.taskTable .td.Pendente {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.taskTable .td.EmAndamento {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.taskTable .td.Concluída {
+    color: #28a745;
+    font-weight: bold;
+}

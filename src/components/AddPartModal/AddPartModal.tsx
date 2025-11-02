@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import type { NewPartData, PartType, PartStatus } from '../../types/PartTypes';
+import type { NewPartData } from '../../types/PartTypes';
 import styles from './AddPartModal.module.css'; // Usaremos um CSS de modal genérico
 
 interface AddPartModalProps {

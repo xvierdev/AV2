@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import type { NewTestData, TestType, TestResult } from '../../types/TestTypes';
+import type { NewTestData } from '../../types/TestTypes';
 import styles from './RecordTestModal.module.css'; // Reutilize o CSS de modal
 interface RecordTestModalProps {
     isOpen: boolean;

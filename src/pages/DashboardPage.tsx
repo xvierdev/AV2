@@ -109,7 +109,7 @@ function DashboardPage() {
                     <button onClick={() => navigate('/aeronaves')} className={pageStyles.actionButton} style={{ backgroundColor: '#6c757d', color: 'white' }}>
                         Ver Aeronaves
                     </button>
-                    <button onClick={() => logout()} className={pageStyles.logoutButton}>Sair</button>
+                    {/* <button onClick={() => logout()} className={pageStyles.logoutButton}>Sair</button> */}
                 </div>
             </header>
 
