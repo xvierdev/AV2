@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/utils/mockUsers.ts
 
-import { type User, type UserWithoutPassword } from "../types/UserTypes";
+import { type User, type UserLevel, type UserWithoutPassword } from "../types/UserTypes";
 
 export const mockUsers: User[] = [
     {
@@ -85,4 +85,50 @@ export const createNewUser = (
     // Retorna o objeto sem senha
     const { password, ...userWithoutPassword } = newUser;
     return userWithoutPassword;
+};
+
+/**
+ * Atualiza os dados de um usuário existente.
+ * @param userId - O ID do usuário a ser atualizado.
+ * @param updatedData - Um objeto com os campos a serem atualizados(nome e / ou nível).
+ * @returns O objeto do usuário atualizado ou null se não for encontrado.
+ */
+export const updateUser = (userId: number, updatedData: { name?: string; level?: UserLevel }): User | null => {
+    const userIndex = mockUsers.findIndex((u: { id: number; }) => u.id === userId);
+
+    if (userIndex !== -1) {
+        // Atualiza apenas os campos fornecidos
+        if (updatedData.name) {
+            mockUsers[userIndex].name = updatedData.name;
+        }
+        if (updatedData.level) {
+            mockUsers[userIndex].level = updatedData.level;
+            // Atualiza o levelName para corresponder ao novo level
+            mockUsers[userIndex].levelName = updatedData.level.charAt(0).toUpperCase() + updatedData.level.slice(1);
+        }
+
+        console.log('Usuário atualizado:', mockUsers[userIndex]);
+        return { ...mockUsers[userIndex] }; // Retorna uma cópia do usuário atualizado
+    }
+
+    console.error(`Usuário com ID ${userId} não encontrado para atualização.`);
+    return null;
+};
+
+/**
+ * Deleta um usuário do sistema.
+ * @param userId - O ID do usuário a ser deletado.
+ * @returns true se a exclusão foi bem-sucedida, false caso contrário.
+ */
+export const deleteUser = (userId: number): boolean => {
+    const userIndex = mockUsers.findIndex((u: { id: number; }) => u.id === userId);
+
+    if (userIndex !== -1) {
+        const deletedUser = mockUsers.splice(userIndex, 1);
+        console.log('Usuário deletado:', deletedUser[0]);
+        return true;
+    }
+
+    console.error(`Usuário com ID ${userId} não encontrado para exclusão.`);
+    return false;
 };

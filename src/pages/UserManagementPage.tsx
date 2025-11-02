@@ -4,6 +4,7 @@ import { useAuth } from '../context/useAuth';
 import { getAllUsers, createNewUser } from '../utils/mockUsers';
 import type { UserLevel, UserWithoutPassword } from '../types/UserTypes';
 import pageStyles from './UserManagementPage.module.css';
+import { updateUser, deleteUser } from '../utils/mockUsers';
 
 function UserManagementPage() {
     const { user, logout, USER_LEVELS } = useAuth();
@@ -19,6 +20,10 @@ function UserManagementPage() {
         username: '',
         level: USER_LEVELS.OPERATOR as UserLevel // Padrão
     });
+
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    // Guarda o usuário que está sendo editado
+    const [editingUser, setEditingUser] = useState<UserWithoutPassword | null>(null);
 
     // Efeito para carregar a lista de usuários quando a página é montada
     useEffect(() => {
@@ -75,6 +80,64 @@ function UserManagementPage() {
 
     const allLevels: UserLevel[] = [USER_LEVELS.ADMIN, USER_LEVELS.ENGINEER, USER_LEVELS.OPERATOR];
 
+    // Abre o modal de edição e preenche com os dados do usuário selecionado
+    const handleOpenEditModal = (userToEdit: UserWithoutPassword) => {
+        setEditingUser(userToEdit);
+        setIsEditModalOpen(true);
+    };
+
+    // Salva as alterações do formulário de edição
+    const handleUpdateUser = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!editingUser) return;
+
+        const updatedUser = updateUser(editingUser.id, {
+            name: editingUser.name,
+            level: editingUser.level,
+        });
+
+        if (updatedUser) {
+            // Atualiza a lista de usuários na UI
+            setUsersList(prev => prev.map(u => (u.id === updatedUser.id ? updatedUser : u)));
+            setIsEditModalOpen(false);
+            setEditingUser(null);
+            alert('Usuário atualizado com sucesso!');
+        } else {
+            alert('Erro ao atualizar o usuário.');
+        }
+    };
+
+    // Handler para o input do modal de edição
+    const handleEditInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (editingUser) {
+            setEditingUser({ ...editingUser, [name]: value });
+        }
+    };
+
+    // Deleta um usuário após uma confirmação
+    const handleDeleteUser = (userId: number, userName: string) => {
+        // 🚨 NUNCA permita que um administrador delete a si mesmo!
+        if (user?.id === userId) {
+            alert('Ação não permitida: Você não pode excluir sua própria conta.');
+            return;
+        }
+
+        // 🚨 SEMPRE peça confirmação para ações destrutivas!
+        const isConfirmed = window.confirm(`Você tem certeza que deseja excluir o usuário "${userName}"? Esta ação não pode ser desfeita.`);
+
+        if (isConfirmed) {
+            const success = deleteUser(userId);
+            if (success) {
+                // Remove o usuário da lista na UI
+                setUsersList(prev => prev.filter(u => u.id !== userId));
+                alert('Usuário excluído com sucesso.');
+            } else {
+                alert('Erro ao excluir o usuário.');
+            }
+        }
+    };
+
     return (
         <div className={pageStyles.container}>
             <header className={pageStyles.header}>
@@ -104,6 +167,7 @@ function UserManagementPage() {
                             <th className={pageStyles.th}>Usuário</th>
                             <th className={pageStyles.th}>Nível de Acesso</th>
                             <th className={pageStyles.th}>Aeronaves Associadas</th>
+                            <th className={pageStyles.th}>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -120,6 +184,21 @@ function UserManagementPage() {
                                         ? u.associatedAircrafts.join(', ')
                                         : 'N/A'
                                     }
+                                </td>
+                                <td className={pageStyles.td}>
+                                    <div className={pageStyles.actionsCell}>
+                                        <button onClick={() => handleOpenEditModal(u)} className={pageStyles.editButton}>
+                                            Editar
+                                        </button>
+                                        <button
+                                            onClick={() => handleDeleteUser(u.id, u.name)}
+                                            className={pageStyles.deleteButton}
+                                            // Desabilita o botão se o usuário for o próprio admin
+                                            disabled={user?.id === u.id}
+                                        >
+                                            Excluir
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -149,6 +228,32 @@ function UserManagementPage() {
                         <div className={pageStyles.modalActions}>
                             <button type="button" onClick={() => setIsModalOpen(false)} className={pageStyles.actionButton} style={{ backgroundColor: '#6c757d' }}>Cancelar</button>
                             <button type="submit" className={pageStyles.actionButton}>Criar Usuário</button>
+                        </div>
+                    </form>
+                </div>
+            )}
+            {/* NOVO MODAL DE EDITAR USUÁRIO */}
+            {isEditModalOpen && editingUser && (
+                <div className={pageStyles.modalOverlay}>
+                    <form onSubmit={handleUpdateUser} className={pageStyles.modalContent}>
+                        <h3>Editando Usuário: {editingUser.username}</h3>
+
+                        <label>Nome Completo:</label>
+                        <input name="name" required value={editingUser.name} onChange={handleEditInputChange} className={pageStyles.modalInput} />
+
+                        <label>Nível de Acesso:</label>
+                        <select name="level" required value={editingUser.level} onChange={handleEditInputChange} className={pageStyles.modalInput}>
+                            {allLevels.map(level => (
+                                <option key={level} value={level}>
+                                    {level.charAt(0).toUpperCase() + level.slice(1)}
+                                </option>
+                            ))}
+                        </select>
+                        <p className={pageStyles.modalHint}>* O nome de usuário (login) não pode ser alterado.</p>
+
+                        <div className={pageStyles.modalActions}>
+                            <button type="button" onClick={() => setIsEditModalOpen(false)} className={pageStyles.actionButton} style={{ backgroundColor: '#6c757d' }}>Cancelar</button>
+                            <button type="submit" className={pageStyles.actionButton}>Salvar Alterações</button>
                         </div>
                     </form>
                 </div>
