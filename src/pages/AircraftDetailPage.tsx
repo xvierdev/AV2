@@ -1,3 +1,7 @@
+import { TestsList } from '../components/TestsList/TestsList';
+import { RecordTestModal } from '../components/RecordTestModal/RecordTestModal';
+import { getTestsByAircraftId, recordNewTest } from '../utils/mockTests';
+import type { Test, NewTestData } from '../types/TestTypes';
 import { useState, useEffect, type FormEvent, type ChangeEvent, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
@@ -8,6 +12,10 @@ import type { User } from '../types/UserTypes';
 import pageStyles from './AircraftDetailPage.module.css';
 import { getTasksByAircraftId, updateTaskStatus, createNewTask } from '../utils/mockTasks';
 import type { Task, TaskStatus } from '../types/TaskTypes';
+import { PartsList } from '../components/PartsList/PartsList';
+import { AddPartModal } from '../components/AddPartModal/AddPartModal';
+import { getPartsByAircraftId, addPart, updatePartStatus } from '../utils/mockParts';
+import type { Part, NewPartData, PartStatus } from '../types/PartTypes';
 
 // Tipo para os dados de edição, aceita parcial para facilitar a manipulação do estado
 type EditableAircraftData = Partial<Aircraft>;
@@ -76,6 +84,10 @@ function AircraftDetailPage() {
             isAdmin: isAdmin
         };
     }, [user, aircraft, USER_LEVELS]); // Dependências do useMemo
+    const [partsList, setPartsList] = useState<Part[]>([]);
+    const [isPartModalOpen, setIsPartModalOpen] = useState(false);
+    const [testsList, setTestsList] = useState<Test[]>([]);
+    const [isTestModalOpen, setIsTestModalOpen] = useState(false);
 
     // Efeito para carregar os dados da aeronave (useEffect é um Hook)
     useEffect(() => {
@@ -94,6 +106,8 @@ function AircraftDetailPage() {
             setEditData(foundAircraft);
             // Carrega as tarefas
             setTasksList(getTasksByAircraftId(id!));
+            setPartsList(getPartsByAircraftId(id!));
+            setTestsList(getTestsByAircraftId(id!));
         }
     }, [id]);
 
@@ -264,6 +278,30 @@ function AircraftDetailPage() {
             alert("Erro: Não foi possível atualizar o status da tarefa.");
             console.error(`Falha ao atualizar a tarefa com ID: ${task.id}`);
         }
+    };
+
+    const handleAddPart = (partData: NewPartData) => {
+        if (!id) return;
+        const newPart = addPart(id, partData);
+        setPartsList(prev => [...prev, newPart]);
+        setIsPartModalOpen(false);
+        alert(`Peça "${newPart.name}" adicionada com sucesso!`);
+    };
+
+    const handleUpdatePartStatus = (partId: number, newStatus: PartStatus) => {
+        const updatedPart = updatePartStatus(partId, newStatus);
+        if (updatedPart) {
+            setPartsList(prev => prev.map(p => p.id === partId ? updatedPart : p));
+        }
+    };
+
+
+    const handleRecordTest = (testData: NewTestData) => {
+        if (!id) return;
+        const newTest = recordNewTest(id, testData);
+        setTestsList(prev => [...prev, newTest]);
+        setIsTestModalOpen(false);
+        alert(`Teste de tipo "${newTest.type}" registrado com sucesso!`);
     };
 
     // Filtra o nome dos engenheiros associados para exibição
@@ -444,7 +482,52 @@ function AircraftDetailPage() {
                     </form>
                 </div>
             )}
-        </div>
+
+            {/* NOVA SEÇÃO DE PEÇAS */}
+            <section className={pageStyles.tasksSection}> {/* Reutilizando o estilo */}
+                <div className={pageStyles.tasksHeader}>
+                    <h2>🔩 Peças e Componentes ({partsList.length})</h2>
+                    {permissions.canEditDetails && (
+                        <button onClick={() => setIsPartModalOpen(true)} className={pageStyles.actionButton}>
+                            + Adicionar Peça
+                        </button>
+                    )}
+                </div>
+                <PartsList
+                    parts={partsList}
+                    canManage={permissions.canEditDetails}
+                    onUpdateStatus={handleUpdatePartStatus}
+                />
+            </section>
+
+            {/* NOVO MODAL DE PEÇAS */}
+            <AddPartModal
+                isOpen={isPartModalOpen}
+                onClose={() => setIsPartModalOpen(false)}
+                onSubmit={handleAddPart}
+            />
+            {/* NOVA SEÇÃO DE TESTES */}
+            <section className={pageStyles.tasksSection}> {/* Reutilizando o estilo */}
+                <div className={pageStyles.tasksHeader}>
+                    <h2>🔬 Histórico de Testes ({testsList.length})</h2>
+                    {permissions.canEditDetails && (
+                        <button onClick={() => setIsTestModalOpen(true)} className={pageStyles.actionButton}>
+                            + Registrar Teste
+                        </button>
+                    )}
+                </div>
+                <TestsList tests={testsList} />
+            </section>
+
+            {/* ... (Modal de Tarefas e Peças) ... */}
+
+            {/* NOVO MODAL DE TESTES */}
+            <RecordTestModal
+                isOpen={isTestModalOpen}
+                onClose={() => setIsTestModalOpen(false)}
+                onSubmit={handleRecordTest}
+            />
+        </div >
     );
 }
 

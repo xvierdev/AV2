@@ -1,0 +1,27 @@
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.table th,
+.table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+    background-color: #e9ecef;
+}
+
+/* Estilos para os resultados */
+.Aprovado {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.Reprovado {
+    color: #dc3545;
+    font-weight: bold;
+}
