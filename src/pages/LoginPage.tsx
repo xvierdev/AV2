@@ -7,8 +7,8 @@ function LoginPage() {
     const { user, login, loading } = useAuth();
     const navigate = useNavigate();
 
-    const [username, setUsername] = useState<string | undefined>();
-    const [password, setPassword] = useState<string | undefined>();
+    const [username, setUsername] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
     const [error, setError] = useState('');
 
     if (user) {

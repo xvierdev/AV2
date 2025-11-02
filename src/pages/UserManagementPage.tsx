@@ -2,11 +2,8 @@ import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/useAuth';
 import { getAllUsers, createNewUser } from '../utils/mockUsers';
-import type { UserLevel, User } from '../types/UserTypes';
+import type { UserLevel, UserWithoutPassword } from '../types/UserTypes';
 import pageStyles from './UserManagementPage.module.css';
-
-// Tipo para a lista de usuários que não inclui a senha
-type UserWithoutPassword = Omit<User, 'password'>;
 
 function UserManagementPage() {
     const { user, logout, USER_LEVELS } = useAuth();
@@ -58,10 +55,12 @@ function UserManagementPage() {
                 newUserForm.level
             );
 
-            // Atualiza a lista e fecha o modal
-            setUsersList(getAllUsers());
-            setIsModalOpen(false);
-            alert(`Usuário ${addedUser.name} (${addedUser.username}) criado com sucesso! Senha Padrão: 123.`);
+            // 💡 ATUALIZE O ESTADO DIRETAMENTE
+            // A função createNewUser já retorna o objeto completo, sem a senha.
+            setUsersList(prevUsers => [...prevUsers, addedUser]);
+
+            setIsModalOpen(false); // Fecha o modal
+            alert(`Usuário ${addedUser.name} criado com sucesso! Senha Padrão: 123.`);
 
         } catch (error) {
             console.error("Erro ao criar usuário:", error);

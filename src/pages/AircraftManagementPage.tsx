@@ -7,11 +7,12 @@ import pageStyles from './AircraftManagementPage.module.css';
 
 function AircraftManagementPage() {
     // O useAuth retorna o usuário tipado
-    const { user, logout, USER_LEVELS } = useAuth();
+    const { user, USER_LEVELS } = useAuth();
     const navigate = useNavigate();
 
+
     // Obter a lista de aeronaves baseada nas permissões do usuário logado
-    const aircrafts: AircraftWithPermission[] = getAircraftsForUser(user!); // Usamos '!' pois o ProtectedRoute garante que user não é null
+    const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>(() => getAircraftsForUser(user!));
 
     // Permissões
     const isAdmin = user!.level === USER_LEVELS.ADMIN;
@@ -53,10 +54,11 @@ function AircraftManagementPage() {
         try {
             const addedAircraft = addAircraft(newAircraftData, user!.id);
             alert(`Aeronave ${addedAircraft.id} adicionada com sucesso!`);
+
+            // 2. ATUALIZE O ESTADO EM VEZ DE RECARREGAR A PÁGINA
+            const newAircraftWithPermissions = { ...addedAircraft, canEdit: true }; // Admin que cria sempre pode editar
+            setAircrafts(prevAircrafts => [...prevAircrafts, newAircraftWithPermissions]);
             setIsModalOpen(false);
-            // Em um projeto real, você faria um setState ou uma nova busca de dados.
-            // Aqui, recarregamos para simplificar o mock.
-            window.location.reload();
         } catch (error) {
             alert("Erro ao adicionar aeronave. Consulte o console.");
             console.error(error);
@@ -75,36 +77,23 @@ function AircraftManagementPage() {
         }
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
 
     return (
         <div className={pageStyles.container}>
-            <header className={pageStyles.header}>
-                <h1>✈️ Aerocode - Gerenciamento de Aeronaves</h1>
-                <div className={pageStyles.userInfo}>
-                    <span className={pageStyles.userRole}>Nível: **{user!.levelName}**</span>
-                    <span className={pageStyles.userName}>Usuário: {user!.name}</span>
-                    <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button>
+            <div className={pageStyles.pageHeader}>
+                <h1>✈️ Gerenciamento de Aeronaves</h1>
+                <div className={pageStyles.actionsBar}>
+                    {isAdmin && (
+                        <button onClick={handleManageUsers} /* ... */>
+                            Gerenciar Funcionários
+                        </button>
+                    )}
+                    {isAdmin && (
+                        <button onClick={handleCreateAircraft} /* ... */>
+                            + Nova Aeronave
+                        </button>
+                    )}
                 </div>
-            </header>
-
-            <div className={pageStyles.actionsBar}>
-                {/* Botão para Gerenciamento de Funcionários (Apenas Admin) */}
-                {isAdmin && (
-                    <button onClick={handleManageUsers} className={pageStyles.actionButton} style={{ backgroundColor: '#28a745' }}>
-                        Gerenciar Funcionários
-                    </button>
-                )}
-
-                {/* Botão para Adicionar Aeronave (Apenas Admin) */}
-                {isAdmin && (
-                    <button onClick={handleCreateAircraft} className={pageStyles.actionButton}>
-                        + Nova Aeronave
-                    </button>
-                )}
             </div>
 
             <main className={pageStyles.content}>

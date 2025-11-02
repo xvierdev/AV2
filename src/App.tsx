@@ -35,9 +35,6 @@ function AppRoutes() {
           {/* ---------------------------------------------------- */}
           <Route element={<ProtectedRoute minLevel={'operador'} />}>
 
-            {/* 💡 CORREÇÃO 2: Rota raiz leva ao Dashboard */}
-            <Route path="/" element={<DashboardPage />} />
-            <Route path="/dashboard" element={<Navigate to="/" replace />} /> {/* Redireciona /dashboard para / */}
 
             <Route path="/aeronaves" element={<AircraftManagementPage />} />
             <Route path="/aeronaves/:id" element={<AircraftDetailPage />} />
@@ -47,6 +44,8 @@ function AppRoutes() {
           {/* ROTAS RESTRITAS (Mínimo: Administrador) - Acesso SÓ Administrador */}
           {/* ---------------------------------------------------- */}
           <Route element={<ProtectedRoute minLevel={'administrador'} />}>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/dashboard" element={<Navigate to="/" replace />} /> {/* Redireciona /dashboard para / */}
             {/* 💡 CORREÇÃO 3: Usando /usuarios (como no Header) e com nível de Admin */}
             <Route path="/usuarios" element={<UserManagementPage />} />
             {/* Adicionando a rota /funcionarios para quem quiser digitar, mas redirecionando para o nome oficial */}

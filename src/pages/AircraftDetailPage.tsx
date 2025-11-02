@@ -42,12 +42,40 @@ function AircraftDetailPage() {
     }, [USER_LEVELS.ENGINEER, USER_LEVELS.OPERATOR, allUsers]);
 
     // --- Lógica de Permissão de Edição ---
-    // Agora 'user' é usado APÓS a chamada dos Hooks, mas antes dos retornos condicionais
-    const isAdmin = user?.level === USER_LEVELS.ADMIN; // Usamos o encadeamento opcional para segurança
-    const isAssociatedEngineer = aircraft?.associatedEngineers.includes(user?.id ?? 0) ?? false; // Usamos o encadeamento opcional para segurança
+    // No corpo do componente AircraftDetailPage, logo após os useStates e antes dos useEffects.
+    const permissions = useMemo(() => {
+        // Caso base: se não houver usuário ou aeronave, não há permissões.
+        if (!user || !aircraft) {
+            return {
+                canViewPage: false, // Pode ser útil para um bloqueio geral
+                canEditDetails: false,
+                canCreateTasks: false,
+                canReopenTasks: false,
+                isAdmin: false
+            };
+        }
 
-    // Flag principal: Se o usuário pode ver a seção de edição
-    const canEdit = isAdmin || isAssociatedEngineer;
+        // Calcula as condições base uma única vez
+        const isAdmin = user.level === USER_LEVELS.ADMIN;
+        const isAssociatedEngineer = aircraft.associatedEngineers.includes(user.id);
+
+        // Retorna o objeto de permissões completo
+        return {
+            canViewPage: true, // Se chegou até aqui, pode ver a página
+
+            // Permissão para editar os detalhes da aeronave (modelo, status, etc.)
+            canEditDetails: isAdmin || isAssociatedEngineer,
+
+            // Permissão para criar e deletar tarefas
+            canCreateTasks: isAdmin || isAssociatedEngineer,
+
+            // Permissão para reabrir uma tarefa que já foi concluída
+            canReopenTasks: isAdmin || isAssociatedEngineer,
+
+            // Expõe a flag de admin para ações que são EXCLUSIVAS do admin
+            isAdmin: isAdmin
+        };
+    }, [user, aircraft, USER_LEVELS]); // Dependências do useMemo
 
     // Efeito para carregar os dados da aeronave (useEffect é um Hook)
     useEffect(() => {
@@ -113,7 +141,7 @@ function AircraftDetailPage() {
     const handleSave = (e: FormEvent) => {
         e.preventDefault();
 
-        if (!id || !canEdit || !aircraft) return;
+        if (!id || !permissions.canEditDetails || !aircraft) return;
 
         // Remove campos indesejados e garante que os tipos estão corretos (ex: range e capacity como number)
         const dataToUpdate: Partial<Aircraft> = {
@@ -187,39 +215,54 @@ function AircraftDetailPage() {
         }
     };
 
-    const handleToggleTaskStatus = (taskId: number, currentStatus: TaskStatus) => {
-        // Agora 'user' não é null aqui, graças ao retorno condicional acima.
+    /**
+     * @function handleToggleTaskStatus
+     * @description Altera o status de uma tarefa com base nas permissões do usuário.
+     * 
+     * Regras de Negócio:
+     * 1. Um Operador só pode alterar o status de tarefas que lhe foram atribuídas (ou tarefas 'gerais').
+     * 2. Somente usuários com permissão 'canReopenTasks' (Admins/Engenheiros Associados) podem reabrir uma tarefa já 'Concluída'.
+     * 3. O status alterna entre 'Pendente' e 'Concluída'. (Para este exemplo, não há o estado 'Em Andamento' na transição).
+     */
+    const handleToggleTaskStatus = (task: Task) => {
+        // 💡 PASSO 1: Verificação de Segurança (o 'user' já foi validado no topo do componente, então não é nulo aqui)
+        if (!user) return;
 
-        const taskToUpdate = tasksList.find(t => t.id === taskId);
-        if (!taskToUpdate) return;
+        // 💡 PASSO 2: Obter as condições específicas da tarefa
+        // Verifica se o usuário logado é o responsável pela tarefa ou se a tarefa é "geral" (sem responsável)
+        const isResponsible = task.responsibleUserId === user.id || task.responsibleUserId === null;
 
-        // 1. Permissão para alterar status
-        const isResponsible = taskToUpdate.responsibleUserId === user.id || taskToUpdate.responsibleUserId === null;
+        // 💡 PASSO 3: Aplicar as regras de permissão (agora usando o objeto 'permissions')
 
-        // Admin e Engenheiro Associado podem alterar qualquer tarefa
-        const canManage = canEdit;
-
-        if (!canManage && !isResponsible) {
-            alert("Você não tem permissão para alterar o status desta tarefa.");
+        // Regra A: Bloqueia a reabertura de tarefas concluídas por usuários sem permissão.
+        if (task.status === 'Concluída' && !permissions.canReopenTasks) {
+            alert("Ação bloqueada: Apenas Engenheiros Associados ou Administradores podem reabrir uma tarefa concluída.");
             return;
         }
 
-        // 2. Determinar o próximo status (simples: Pendente -> Concluída)
-        const newStatus: TaskStatus = currentStatus === 'Pendente' ? 'Concluída' : 'Pendente';
-
-        // Se for Concluída, só permita voltar para Pendente se for Admin/Engenheiro Associado
-        if (currentStatus === 'Concluída' && !canManage) {
-            alert("Apenas Engenheiros Associados ou Administradores podem reabrir tarefas concluídas.");
+        // Regra B: Bloqueia Operadores que tentam alterar tarefas de outros.
+        if (user.level === USER_LEVELS.OPERATOR && !isResponsible) {
+            alert("Ação bloqueada: Você só pode alterar o status de tarefas que estão sob sua responsabilidade.");
             return;
         }
 
-        const updatedTask = updateTaskStatus(taskId, newStatus);
+        // 💡 PASSO 4: Determinar o próximo estado da tarefa
+        // A lógica de transição: se está 'Pendente', vai para 'Concluída'; senão, volta para 'Pendente'.
+        const newStatus: TaskStatus = task.status === 'Pendente' ? 'Concluída' : 'Pendente';
+
+        // 💡 PASSO 5: Chamar a função de atualização e atualizar a UI
+        const updatedTask = updateTaskStatus(task.id, newStatus);
 
         if (updatedTask) {
-            setTasksList(prev => prev.map(t => t.id === taskId ? updatedTask : t));
-            alert(`Status da Tarefa #${taskId} alterado para: ${newStatus}`);
+            // Atualiza a lista de tarefas no estado do React para que a UI reflita a mudança instantaneamente.
+            setTasksList(prevTasks =>
+                prevTasks.map(t => (t.id === task.id ? updatedTask : t))
+            );
+            // (Opcional) Feedback ao usuário
+            // alert(`Status da Tarefa #${task.id} alterado para: ${newStatus}`);
         } else {
-            alert("Erro ao atualizar status da tarefa.");
+            alert("Erro: Não foi possível atualizar o status da tarefa.");
+            console.error(`Falha ao atualizar a tarefa com ID: ${task.id}`);
         }
     };
 
@@ -244,7 +287,7 @@ function AircraftDetailPage() {
 
             {/* Seção de Permissão e Edição */}
             <div className={pageStyles.permissionBar}>
-                {canEdit ? (
+                {permissions.canEditDetails ? (
                     <>
                         <span className={pageStyles.editTag} style={{ backgroundColor: '#28a745' }}>✅ Você pode editar este projeto.</span>
                         <button
@@ -279,7 +322,7 @@ function AircraftDetailPage() {
                 </section>
 
                 {/* Formulário de Edição (Apenas se canEdit e isEditing forem TRUE) */}
-                {canEdit && isEditing && (
+                {permissions.canEditDetails && isEditing && (
                     <form onSubmit={handleSave} className={pageStyles.editForm}>
                         <h2>✏️ Editar Detalhes</h2>
                         <label className={pageStyles.label}>Modelo:</label>
@@ -323,7 +366,7 @@ function AircraftDetailPage() {
             <section className={pageStyles.tasksSection}>
                 <div className={pageStyles.tasksHeader}>
                     <h2>📋 Etapas de Produção / Tarefas ({tasksList.length})</h2>
-                    {canEdit && ( // Permissão para adicionar tarefas
+                    {permissions.canEditDetails && ( // Permissão para adicionar tarefas
                         <button onClick={() => setIsTaskModalOpen(true)} className={pageStyles.actionButton} style={{ backgroundColor: '#007bff' }}>
                             + Adicionar Tarefa
                         </button>
@@ -354,7 +397,7 @@ function AircraftDetailPage() {
                                 </td>
                                 <td className={pageStyles.td}>
                                     <button
-                                        onClick={() => handleToggleTaskStatus(task.id, task.status)}
+                                        onClick={() => handleToggleTaskStatus(task)}
                                         className={pageStyles.taskActionButton}
                                         style={{
                                             backgroundColor: task.status === 'Pendente' ? '#28a745' : (task.status === 'Concluída' ? '#6c757d' : '#ffc107'),
