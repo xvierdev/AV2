@@ -62,3 +62,19 @@
 .logoutButton:hover {
     background-color: #cc0000;
 }
+
+/* Adicionar/Ajustar em src/components/Header/Header.module.css */
+.welcomeText {
+    margin-right: 20px;
+    font-size: 0.9rem;
+    color: white;
+    /* Garante que o link seja branco */
+    text-decoration: none;
+    /* Remove o sublinhado padrão */
+    transition: color 0.2s;
+}
+
+.welcomeText:hover {
+    color: #ffd700;
+    /* Efeito de hover dourado, igual aos outros links */
+}

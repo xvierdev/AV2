@@ -1,3 +1,4 @@
+import ProfilePage from "./pages/ProfilePage";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 // Importações de Contexto e Componentes
 import { useAuth } from './context/useAuth';
@@ -34,8 +35,7 @@ function AppRoutes() {
           {/* ROTAS PROTEGIDAS (Mínimo: Operador) - Acesso Operador, Engenheiro, Administrador */}
           {/* ---------------------------------------------------- */}
           <Route element={<ProtectedRoute minLevel={'operador'} />}>
-
-
+            <Route path="/perfil" element={<ProfilePage />} />
             <Route path="/aeronaves" element={<AircraftManagementPage />} />
             <Route path="/aeronaves/:id" element={<AircraftDetailPage />} />
           </Route>
@@ -71,7 +71,7 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-        <AppRoutes />
+      <AppRoutes />
     </BrowserRouter>
   );
 }

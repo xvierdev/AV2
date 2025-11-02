@@ -132,3 +132,43 @@ export const deleteUser = (userId: number): boolean => {
     console.error(`Usuário com ID ${userId} não encontrado para exclusão.`);
     return false;
 };
+
+/**
+ * Atualiza a senha de um usuário específico, verificando a senha antiga.
+ * @param userId - O ID do usuário.
+ * @param oldPassword - A senha atual para verificação.
+ * @param newPassword - A nova senha.
+ * @returns true se a atualização foi bem-sucedida.
+ * @throws {Error} se a senha antiga estiver incorreta ou a nova for inválida.
+ */
+export const updatePassword = (userId: number, oldPassword: string, newPassword: string): boolean => {
+    const userIndex = mockUsers.findIndex(u => u.id === userId);
+
+    if (userIndex !== -1) {
+        const user = mockUsers[userIndex];
+
+        // 🚨 PASSO CRÍTICO: Verificar se a senha antiga corresponde.
+        if (user.password !== oldPassword) {
+            // Lançamos um erro específico que o front-end pode capturar e exibir.
+            throw new Error('A senha antiga está incorreta. Tente novamente.');
+        }
+
+        // Validação da nova senha (pode ser mais complexa)
+        if (newPassword.length < 3) {
+            throw new Error('A nova senha deve ter pelo menos 3 caracteres.');
+        }
+
+        // Validação para não usar a mesma senha
+        if (oldPassword === newPassword) {
+            throw new Error('A nova senha não pode ser igual à antiga.');
+        }
+
+        // Se tudo estiver correto, atualiza a senha.
+        user.password = newPassword;
+        console.log(`Senha do usuário ${user.username} atualizada com sucesso.`);
+        return true;
+    }
+
+    // Este caso não deveria acontecer se o usuário está logado, mas é uma boa guarda.
+    throw new Error('Usuário não encontrado.');
+};

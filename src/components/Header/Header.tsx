@@ -52,9 +52,13 @@ const Header: React.FC = () => {
             </nav>
 
             <div className={styles.userInfo}>
-                <span className={styles.welcomeText}>
+                {/* <span className={styles.welcomeText}>
                     Olá, **{user.name}** ({user.levelName})
-                </span>
+                </span> */}
+                {/* ATUALIZE ESTA PARTE */}
+                <Link to="/perfil" className={styles.welcomeText}>
+                    Olá, **{user.name}** ({user.levelName})
+                </Link>
 
                 <button
                     onClick={handleLogout}
