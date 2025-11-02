@@ -1,0 +1,128 @@
+/* src/pages/AircraftManagementPage.module.css */
+
+.container {
+    padding: 20px;
+    background-color: #f9f9f9;
+    min-height: 100vh;
+    color: #213547;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.userInfo {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.userRole {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.logoutButton {
+    padding: 8px 15px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.logoutButton:hover {
+    background-color: #c82333;
+}
+
+.actionsBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.actionButton {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.actionButton:hover {
+    background-color: #218838;
+}
+
+.filterSelect {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    margin-right: 15px;
+}
+
+.aircraftGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border-left: 5px solid #007bff;
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.card p {
+    margin: 5px 0;
+    font-size: 0.95em;
+}
+
+.card h3 {
+    color: #007bff;
+    margin-top: 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+}
+
+.statusBadge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 12px;
+    color: white;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.status-EmProducao {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.status-TestesFinais {
+    background-color: #17a2b8;
+}
+
+.status-Concluido {
+    background-color: #28a745;
+}

@@ -1,0 +1,64 @@
+/* src/components/Header/Header.module.css */
+
+.header {
+    background-color: #003366;
+    /* Azul Escuro */
+    color: white;
+    padding: 0 30px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    /* Fica fixo no topo */
+    top: 0;
+    z-index: 1000;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+    /* Amarelo/Dourado */
+}
+
+.navLinks a {
+    color: white;
+    text-decoration: none;
+    margin-right: 25px;
+    font-size: 1rem;
+    padding: 5px 0;
+    transition: color 0.2s;
+}
+
+.navLinks a:hover {
+    color: #ffd700;
+    border-bottom: 2px solid #ffd700;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+}
+
+.welcomeText {
+    margin-right: 20px;
+    font-size: 0.9rem;
+}
+
+.logoutButton {
+    background-color: #ff4d4d;
+    /* Vermelho */
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+}
+
+.logoutButton:hover {
+    background-color: #cc0000;
+}
