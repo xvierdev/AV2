@@ -1,3 +1,4 @@
+import { generateAircraftReport } from '../utils/reportGenerator';
 import { TestsList } from '../components/TestsList/TestsList';
 import { RecordTestModal } from '../components/RecordTestModal/RecordTestModal';
 import { getTestsByAircraftId, recordNewTest } from '../utils/mockTests';
@@ -304,6 +305,37 @@ function AircraftDetailPage() {
         alert(`Teste de tipo "${newTest.type}" registrado com sucesso!`);
     };
 
+    const handleGenerateReport = () => {
+        // As guardas garantem que os dados não são nulos neste ponto
+        if (!aircraft || !permissions.canEditDetails) {
+            alert('Dados insuficientes ou permissão negada para gerar o relatório.');
+            return;
+        }
+
+        // Gera o conteúdo do relatório
+        const reportText = generateAircraftReport(aircraft, tasksList, partsList, testsList);
+
+        // Cria um objeto "Blob" que representa o arquivo de texto
+        const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
+
+        // Cria um link temporário na memória para acionar o download
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+
+        // Define o nome do arquivo que será baixado
+        const fileName = `Relatorio_Aeronave_${aircraft.id}_${new Date().toISOString().split('T')[0]}.txt`;
+        link.download = fileName;
+
+        // Adiciona o link ao corpo do documento (necessário para o Firefox)
+        document.body.appendChild(link);
+
+        // Simula um clique no link para iniciar o download
+        link.click();
+
+        // Remove o link temporário do documento
+        document.body.removeChild(link);
+    };
+
     // Filtra o nome dos engenheiros associados para exibição
     const associatedNames = engineers
         .filter(eng => aircraft.associatedEngineers.includes(eng.id))
@@ -328,13 +360,23 @@ function AircraftDetailPage() {
                 {permissions.canEditDetails ? (
                     <>
                         <span className={pageStyles.editTag} style={{ backgroundColor: '#28a745' }}>✅ Você pode editar este projeto.</span>
-                        <button
-                            onClick={() => setIsEditing(true)}
-                            className={pageStyles.editButton}
-                            disabled={isEditing}
-                        >
-                            {isEditing ? 'Modo Edição ON' : 'Habilitar Edição'}
-                        </button>
+                        <div>
+                            {/* BOTÃO NOVO AQUI */}
+                            <button
+                                onClick={handleGenerateReport}
+                                className={pageStyles.actionButton}
+                                style={{ backgroundColor: '#17a2b8', marginRight: '10px' }} // Cor ciano para diferenciar
+                            >
+                                📜 Gerar Relatório
+                            </button>
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className={pageStyles.editButton}
+                                disabled={isEditing}
+                            >
+                                {isEditing ? 'Modo Edição ON' : 'Habilitar Edição'}
+                            </button>
+                        </div>
                     </>
                 ) : (
                     <span className={pageStyles.editTag}>Acesso apenas para visualização.</span>
