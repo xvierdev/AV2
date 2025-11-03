@@ -45,7 +45,7 @@ export const generateAircraftReport = (
 
     const tasksInfo = tasks.length > 0
         ? tasks.map(task =>
-            `  - [${task.status.padEnd(12)}] #${task.id}: ${task.description} (Resp: ${task.responsibleUserName}, Prazo: ${task.dueDate})`
+            `  - [${task.status.padEnd(12)}] #${task.id}: ${task.description} (Resp: ${task.responsibleUserNames}, Prazo: ${task.dueDate})`
         ).join('\n')
         : 'Nenhuma tarefa registrada.';
 

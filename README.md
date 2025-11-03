@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# ✈️ Aerocode - Sistema de Gestão da Produção de Aeronaves
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Badge de Status do Projeto: Em Desenvolvimento](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
+![Badge de Tecnologia Front-end: React](https://img.shields.io/badge/Front--end-React%20%7C%20Vite-blue)
+![Badge de Linguagem: TypeScript](https://img.shields.io/badge/Linguagem-TypeScript-blueviolet)
 
-Currently, two official plugins are available:
+## 📝 1. Visão Geral do Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O **Aerocode** é um sistema corporativo crucial para o gerenciamento e acompanhamento de todas as fases da produção de aeronaves (comerciais e militares). O projeto tem como foco a migração da interface de linha de comando (CLI) legada para uma **Interface Gráfica do Usuário (GUI) moderna e intuitiva**, visando a escalabilidade e a redução drástica da curva de aprendizado para engenheiros e operadores.
 
-## React Compiler
+O sistema é construído como uma **Single Page Application (SPA)**, garantindo uma experiência de usuário fluida e responsiva, com a robustez e segurança fornecida pela tipagem estática do **TypeScript**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🎯 1.1. Objetivos Estratégicos
 
-## Expanding the ESLint configuration
+* **Usabilidade Aprimorada:** Substituir a interface CLI por uma GUI amigável, tornando o sistema acessível a um público técnico, mas com maior facilidade de uso.
+* **Gestão Completa do Ciclo de Vida:** Gerenciar todas as etapas críticas: Cadastro de Aeronaves, Suprimento de Peças, Etapas de Produção, Testes e Geração de Relatório Final.
+* **Integridade e Segurança:** Implementar um controle de acesso rigoroso para garantir que apenas usuários autorizados realizem operações críticas (CRUD) nas respectivas entidades.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### 🛡️ 1.2. Níveis de Acesso e Permissões (Autenticação)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+O Aerocode utiliza três níveis de permissão para controlar o acesso e as ações disponíveis:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Nível de Acesso | Responsabilidades Principais |
+| :--- | :--- |
+| **Administrador** | Gerenciamento completo de Funcionários (Cadastro, Edição, Exclusão, Nível de Acesso), além de todas as funções do Engenheiro. |
+| **Engenheiro** | Ampla permissividade. Gestão de Peças, Etapas e Testes (CRUD), Associação de Operadores a tarefas e Geração do Relatório Final de Produção. |
+| **Operador** | Visualização de Etapas e Peças a ele associadas. Permissão para alterar somente o status de peças relacionadas às suas tarefas. |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 🛠️ 2. Tecnologias Utilizadas
+
+Este projeto é um protótipo navegável **somente front-end** para a fase inicial do desenvolvimento.
+
+* **Front-end:** React (com Hooks e Componentes Funcionais)
+* **Build Tool:** Vite
+* **Linguagem:** TypeScript
+* **Gerenciador de Pacotes:** npm
+* **Compatibilidade:** Windows 10+, Linux Ubuntu 24.04.03+ (e derivados)
+
+---
+
+## 🚀 3. Manual de Execução (Guia de Instalação Local)
+
+Siga os passos abaixo para configurar e executar o projeto em seu ambiente de desenvolvimento.
+
+### 3.1. Pré-requisitos
+
+Certifique-se de que você possui o **Node.js** (versão LTS recomendada) e o **npm** (incluso no Node.js) instalados em seu sistema.
+
+### 3.2. Configuração Inicial
+
+1.  **Clone o Repositório:**
+    ```bash
+    git clone [URL_DO_SEU_REPOSITORIO]
+    cd Aerocode
+    ```
+
+2.  **Instale as Dependências:**
+    Acesse a pasta raiz do projeto e instale todas as bibliotecas necessárias:
+    ```bash
+    npm install
+    ```
+
+### 3.3. Executando o Servidor de Desenvolvimento
+
+Para compilar o código, iniciar o servidor de desenvolvimento local e habilitar o Hot Module Replacement (HMR):
+
+```bash
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+O código de produção compilado estará disponível na pasta ./dist.
