@@ -1,41 +1,69 @@
-// src/components/AddAircraftModal/AddAircraftModal.tsx
 import { useState, type FormEvent, type ChangeEvent } from 'react';
+
+// Tipos
 import type { NewAircraftData } from '../../types/AircraftTypes';
 import type { User } from '../../types/UserTypes';
-import styles from './AddAircraftModal.module.css';
 
+// Estilos
+import styles from './AddAircraftModal.module.css';
+import modalStyles from '../../styles/commonModal.module.css'; // Usando estilos comuns
+
+
+/**
+ * Define as propriedades que o componente AddAircraftModal recebe.
+ */
 interface AddAircraftModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: NewAircraftData) => void;
-    engineers: User[]; // Lista de engenheiros para o select
+    engineers: User[];
 }
 
-// Tipo para o estado de erros do formulário
+/**
+ * Define a estrutura para armazenar os erros de validação do formulário.
+ */
 type FormErrors = {
     [key in keyof NewAircraftData]?: string;
 };
 
+/**
+ * Componente de modal para adicionar uma nova aeronave.
+ */
 export const AddAircraftModal: React.FC<AddAircraftModalProps> = ({ isOpen, onClose, onSubmit, engineers }) => {
+    // ========================================================================
+    // Hooks e Estados
+    // ========================================================================
+
     const [formData, setFormData] = useState<NewAircraftData>({
         model: '', type: 'Comercial', capacity: 0, range: 0, clientName: '', deliveryDeadline: '', associatedEngineers: []
     });
     const [errors, setErrors] = useState<FormErrors>({});
 
-    if (!isOpen) return null;
+    // ========================================================================
+    // Handlers (Funções de Ação)
+    // ========================================================================
 
+    // Valida os campos obrigatórios do formulário antes do envio.
     const validateForm = (): boolean => {
         const newErrors: FormErrors = {};
         if (!formData.model.trim()) newErrors.model = 'O modelo é obrigatório.';
-        if (!formData.type) newErrors.type = 'O tipo é obrigatório.';
         if (!formData.capacity || formData.capacity <= 0) newErrors.capacity = 'A capacidade deve ser um número positivo.';
         if (!formData.range || formData.range <= 0) newErrors.range = 'O alcance deve ser um número positivo.';
 
         setErrors(newErrors);
-        // Retorna true se o objeto de erros estiver vazio
         return Object.keys(newErrors).length === 0;
     };
 
+    // Submete o formulário após validação.
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (validateForm()) {
+            onSubmit(formData);
+            onClose();
+        }
+    };
+
+    // Atualiza o estado do formulário para inputs de texto, número e select simples.
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -44,50 +72,60 @@ export const AddAircraftModal: React.FC<AddAircraftModalProps> = ({ isOpen, onCl
         }));
     };
 
+    // Atualiza o estado do formulário para o select múltiplo de engenheiros.
     const handleMultiSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
         const selectedIds = Array.from(e.target.selectedOptions, option => Number(option.value));
         setFormData(prev => ({ ...prev, associatedEngineers: selectedIds }));
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (validateForm()) {
-            onSubmit(formData);
-            onClose(); // Fecha o modal após o envio
-        }
-    };
+    // ========================================================================
+    // Renderização
+    // ========================================================================
+
+    if (!isOpen) {
+        return null;
+    }
 
     return (
-        <div className={styles.modalOverlay}>
-            <form onSubmit={handleSubmit} className={styles.modalContent}>
+        <div className={modalStyles.modalOverlay}>
+            <form onSubmit={handleSubmit} className={modalStyles.modalContent}>
                 <h3>Adicionar Nova Aeronave</h3>
 
-                <input name="model" placeholder="Modelo (ex: A320 Neo)" onChange={handleChange} />
+                <label className={modalStyles.label}>Modelo:</label>
+                <input name="model" placeholder="Ex: Airbus A320" onChange={handleChange} className={modalStyles.input} />
                 {errors.model && <span className={styles.error}>{errors.model}</span>}
 
-                <select name="type" value={formData.type} onChange={handleChange}>
+                <label className={modalStyles.label}>Tipo:</label>
+                <select name="type" value={formData.type} onChange={handleChange} className={modalStyles.input}>
                     <option value="Comercial">Comercial</option>
                     <option value="Militar">Militar</option>
+                    <option value="Executivo">Executivo</option>
                 </select>
 
-                <input name="capacity" type="number" placeholder="Capacidade de Passageiros" onChange={handleChange} min="1" />
+                <label className={modalStyles.label}>Capacidade:</label>
+                <input name="capacity" type="number" placeholder="Nº de passageiros" onChange={handleChange} min="1" className={modalStyles.input} />
                 {errors.capacity && <span className={styles.error}>{errors.capacity}</span>}
 
-                <input name="range" type="number" placeholder="Alcance (km)" onChange={handleChange} min="1" />
+                <label className={modalStyles.label}>Alcance (km):</label>
+                <input name="range" type="number" placeholder="Distância máxima de voo" onChange={handleChange} min="1" className={modalStyles.input} />
                 {errors.range && <span className={styles.error}>{errors.range}</span>}
 
-                <input name="clientName" placeholder="Nome do Cliente (Opcional)" onChange={handleChange} />
-                <input name="deliveryDeadline" type="date" onChange={handleChange} />
+                <label className={modalStyles.label}>Cliente (Opcional):</label>
+                <input name="clientName" placeholder="Nome da empresa cliente" onChange={handleChange} className={modalStyles.input} />
 
-                <label>Associar Engenheiros (segure Ctrl/Cmd para selecionar vários):</label>
+                <label className={modalStyles.label}>Prazo de Entrega (Opcional):</label>
+                <input name="deliveryDeadline" type="date" onChange={handleChange} className={modalStyles.input} />
+
+                <label className={modalStyles.label}>Associar Engenheiros:</label>
+                <p className={styles.multiSelectHint}>Segure Ctrl/Cmd para selecionar vários</p>
                 <select multiple name="associatedEngineers" onChange={handleMultiSelectChange} className={styles.multiSelect}>
                     {engineers.map(eng => (
                         <option key={eng.id} value={eng.id}>{eng.name}</option>
                     ))}
                 </select>
 
-                <div className={styles.modalActions}>
-                    <button type="button" onClick={onClose}>Cancelar</button>
+                <div className={modalStyles.modalActions}>
+                    <button type="button" onClick={onClose} style={{ backgroundColor: '#6c757d', color: 'white' }}>Cancelar</button>
                     <button type="submit">Salvar Aeronave</button>
                 </div>
             </form>

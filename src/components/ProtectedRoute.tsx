@@ -1,36 +1,52 @@
 import { Navigate, Outlet } from "react-router-dom";
+
+// Contexto
 import { useAuth } from "../context/useAuth";
+
+// Tipos
 import type { UserLevel } from "../types/UserTypes";
 
+
+/**
+ * Define as propriedades que o componente ProtectedRoute recebe.
+ */
 interface ProtectedRouteProps {
     minLevel?: UserLevel;
 }
 
+/**
+ * Componente que atua como um "gatekeeper" para rotas, garantindo que o usuário
+ * esteja logado e tenha o nível de permissão mínimo necessário para acessá-las.
+ */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ minLevel = "operador" }) => {
+    // ========================================================================
+    // Hooks e Lógica de Proteção
+    // ========================================================================
+
     const { user, loading, hasPermission } = useAuth();
 
+    // Exibe uma tela de carregamento enquanto a autenticação é verificada.
     if (loading) {
-        // Exibe tela de carregamento enquanto verifica o estado de autenticação
-        return <div style={{ padding: '20px', textAlign: 'center' }}>Verificando acesso...</div>
+        return <div style={{ padding: '20px', textAlign: 'center' }}>Verificando acesso...</div>;
     }
 
-    // 1. Não Logado: Redireciona para o Login
+    // Se não houver usuário, redireciona para a página de login.
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    // 2. Logado, mas sem Permissão: Redireciona para a home page de acesso
+    // Se o usuário não tiver o nível de permissão necessário, redireciona para a página inicial.
     if (!hasPermission(minLevel)) {
         console.warn(`Acesso negado para o usuário ${user.username} (Nível: ${user.levelName}) tentando acessar a rota de ${minLevel}.`);
-
-        // Redireciona para a rota base que, no App.tsx, leva para /aeronaves,
-        // garantindo que não há tentativa de acessar a mesma rota protegida que causou a negação.
-        return <Navigate to="/" replace />; // 👈 Mudança para rota base
+        return <Navigate to="/" replace />;
     }
 
-    // 3. Permissão Concedida: Renderiza a rota filha
-    return <Outlet />;
+    // ========================================================================
+    // Renderização
+    // ========================================================================
 
+    // Se todas as verificações passarem, renderiza a rota filha.
+    return <Outlet />;
 }
 
 export default ProtectedRoute;
