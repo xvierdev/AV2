@@ -1,49 +1,46 @@
-/* src/pages/AircraftDetailPage.module.css */
+/* ======================================================================== */
+/* Estilos para a Página de Detalhes da Aeronave                            */
+/* ======================================================================== */
 
+/* --- Layout Principal da Página --- */
+
+/* Contêiner principal que envolve toda a página. */
 .container {
     padding: 20px;
     background-color: #f9f9f9;
+    /* Fundo cinza claro para a área de conteúdo. */
     min-height: 100vh;
+    /* Garante que a página ocupe pelo menos toda a altura da tela. */
     color: #213547;
+    /* Cor de texto padrão. */
 }
 
+/* Cabeçalho da página com o título e botões de navegação. */
 .header {
     display: flex;
     justify-content: space-between;
+    /* Espaça o título à esquerda e botões à direita. */
     align-items: center;
+    /* Alinha verticalmente os itens no centro. */
     margin-bottom: 20px;
     border-bottom: 2px solid #eee;
+    /* Linha sutil de separação. */
     padding-bottom: 10px;
 }
 
+/* Contêiner para informações do usuário no cabeçalho. */
 .userInfo {
     display: flex;
     gap: 15px;
+    /* Espaço entre os itens (ex: nome e botão de sair). */
     align-items: center;
 }
 
-.userRole {
-    font-weight: bold;
-    color: #007bff;
-}
-
-.logoutButton {
-    padding: 8px 15px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.logoutButton:hover {
-    background-color: #c82333;
-}
-
+/* Estilo para botões de ação genéricos no cabeçalho e outras áreas. */
 .actionButton {
     padding: 10px 15px;
-    color: white;
+    color: black;
+    background-color: #c8cacc;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -51,16 +48,21 @@
     transition: background-color 0.3s;
 }
 
-/* --- Detalhes da Página --- */
+/* --- Seções de Conteúdo --- */
 
+/* Contêiner em grid para a seção de informações principais e o formulário de edição. */
 .detailsGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    /* Duas colunas de largura igual. */
     gap: 40px;
+    /* Espaço entre as colunas. */
     margin-top: 20px;
     align-items: flex-start;
+    /* Alinha os cards no topo. */
 }
 
+/* Estilo para os "cards" de conteúdo (Informações Principais, Formulário de Edição). */
 .card {
     padding: 30px;
     border: 1px solid #ccc;
@@ -69,105 +71,24 @@
     background-color: white;
 }
 
+/* Estilo para os "badges" de status. */
 .statusBadge {
     font-weight: bold;
     color: #28a745;
+    /* Verde como cor padrão. */
 }
 
-/* --- Edição e Permissão --- */
-
-.permissionBar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px;
-    background-color: #e9f7ef;
-    border: 1px solid #d4edda;
-    border-radius: 8px;
-    margin-bottom: 30px;
-}
-
-.editTag {
-    font-weight: bold;
-    color: #007bff;
-}
-
-.editTag.canEdit {
-    color: #28a745;
-}
-
-.editButton {
-    padding: 10px 20px;
-    background-color: #ffc107;
-    color: #333;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.editButton:hover:not(:disabled) {
-    background-color: #e0a800;
-}
-
-.editButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* --- Formulário de Edição --- */
-
-.editForm {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 30px;
-    border: 1px solid #007bff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: white;
-}
-
-.label {
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-.input {
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-.formActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-.backButton {
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* src/pages/AircraftDetailPage.module.css (ADICIONAR NO FINAL) */
-
+/* Contêiner para as seções de Tarefas, Peças e Testes. */
 .tasksSection {
     margin-top: 50px;
     padding: 30px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     background-color: white;
 }
 
+/* Cabeçalho de cada seção de conteúdo (ex: "Tarefas (5)"). */
 .tasksHeader {
     display: flex;
     justify-content: space-between;
@@ -177,13 +98,101 @@
     padding-bottom: 10px;
 }
 
-/* Tabela de Tarefas */
+/* --- Barra de Permissão --- */
+
+/* A barra no topo da página que informa ao usuário seu nível de acesso. */
+.permissionBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #e9f7ef;
+    /* Fundo verde claro. */
+    border: 1px solid #d4edda;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+/* Estilo para o texto de permissão (ex: "Você pode editar"). */
+.editTag {
+    font-weight: bold;
+    color: #155724;
+    /* Verde escuro para o texto. */
+}
+
+/* --- Botões de Ação Específicos (Editar, Excluir, etc.) --- */
+
+/* Célula da tabela que contém múltiplos botões de ação. */
+.actionsCell {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+    /* Espaço entre os botões (Editar, Excluir). */
+}
+
+/* ESTILO BASE para todos os botões pequenos de ação (Editar, Excluir, Iniciar Tarefa). */
+.editButton,
+.deleteButton,
+.taskActionButton {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    color: white;
+    background-color: #213547;
+    transition: opacity 0.2s;
+}
+
+.editButton:hover:not(:disabled),
+.deleteButton:hover:not(:disabled),
+.taskActionButton:hover:not(:disabled) {
+    opacity: 0.85;
+    /* Efeito de hover sutil. */
+}
+
+.editButton:disabled,
+.deleteButton:disabled,
+.taskActionButton:disabled {
+    opacity: 0.5;
+    /* Deixa o botão semitransparente quando desabilitado. */
+    cursor: not-allowed;
+}
+
+/* CORES ESPECÍFICAS para os botões de ação. */
+.yellow {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.red {
+    background-color: #dc3545;
+}
+
+.blue {
+    background-color: #007bff;
+}
+
+.gray {
+    background-color: #6c757d;
+}
+
+.green {
+    background-color: #28a745;
+}
+
+
+/* --- Tabela (Tarefas, Peças, Testes) --- */
+
+/* Estilo base para todas as tabelas na página. */
 .taskTable {
     width: 100%;
     border-collapse: collapse;
+    /* Remove o espaçamento entre as células. */
     margin-top: 15px;
 }
 
+/* Cabeçalho da tabela (th). */
 .taskTable .th {
     background-color: #f8f9fa;
     padding: 12px 15px;
@@ -191,53 +200,58 @@
     border-bottom: 2px solid #dee2e6;
 }
 
+/* Célula da tabela (td). */
 .taskTable .td {
     padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #dee2e6;
 }
 
+/* Efeito de hover para as linhas da tabela. */
 .taskTable .tr:hover {
     background-color: #fafafa;
 }
 
-.taskActionButton {
-    padding: 6px 10px;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: opacity 0.3s;
-}
-
-.taskActionButton:hover:not(:disabled) {
-    opacity: 0.8;
-}
-
-.taskActionButton:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.EmAndamento {
-    color: #ffc107;
-    /* Amarelo/Laranja */
-    font-weight: bold;
-}
-
-/* Também adicione esta classe ao CSS da tabela de tarefas para o status */
-.taskTable .td.Pendente {
+/* Cores para os textos de status na tabela. */
+.td.Pendente {
     color: #dc3545;
     font-weight: bold;
 }
 
-.taskTable .td.EmAndamento {
+.td.EmAndamento {
     color: #ffc107;
     font-weight: bold;
 }
 
-.taskTable .td.Concluída {
+.td.Concluída {
     color: #28a745;
     font-weight: bold;
+}
+
+
+/* --- Formulário de Edição (seção principal) --- */
+
+/* Contêiner para o formulário de edição que aparece na grid principal. */
+.editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 30px;
+    border: 1px solid #007bff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+/* Labels dentro do formulário de edição. */
+.label {
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Inputs dentro do formulário de edição. */
+.input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }

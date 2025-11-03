@@ -99,16 +99,24 @@ export const AddAircraftModal: React.FC<AddAircraftModalProps> = ({ isOpen, onCl
                 <select name="type" value={formData.type} onChange={handleChange} className={modalStyles.input}>
                     <option value="Comercial">Comercial</option>
                     <option value="Militar">Militar</option>
-                    <option value="Executivo">Executivo</option>
                 </select>
 
-                <label className={modalStyles.label}>Capacidade:</label>
-                <input name="capacity" type="number" placeholder="Nº de passageiros" onChange={handleChange} min="1" className={modalStyles.input} />
-                {errors.capacity && <span className={styles.error}>{errors.capacity}</span>}
+                {/* Contêiner para a linha com dois campos */}
+                <div className={styles.formRow}>
+                    {/* Campo Capacidade */}
+                    <div className={styles.formGroup}>
+                        <label className={modalStyles.label}>Capacidade:</label>
+                        <input name="capacity" type="number" placeholder="Nº de passageiros" onChange={handleChange} min="1" className={modalStyles.input} />
+                        {errors.capacity && <span className={styles.error}>{errors.capacity}</span>}
+                    </div>
 
-                <label className={modalStyles.label}>Alcance (km):</label>
-                <input name="range" type="number" placeholder="Distância máxima de voo" onChange={handleChange} min="1" className={modalStyles.input} />
-                {errors.range && <span className={styles.error}>{errors.range}</span>}
+                    {/* Campo Alcance */}
+                    <div className={styles.formGroup}>
+                        <label className={modalStyles.label}>Alcance (km):</label>
+                        <input name="range" type="number" placeholder="Distância máxima" onChange={handleChange} min="1" className={modalStyles.input} />
+                        {errors.range && <span className={styles.error}>{errors.range}</span>}
+                    </div>
+                </div>
 
                 <label className={modalStyles.label}>Cliente (Opcional):</label>
                 <input name="clientName" placeholder="Nome da empresa cliente" onChange={handleChange} className={modalStyles.input} />

@@ -17,6 +17,14 @@ import { getAllUsers } from '../utils/mockUsers';
 // Estilos
 import pageStyles from './AircraftManagementPage.module.css';
 
+// Mapeamento para as cores
+const statusClassMap: { [key: string]: string } = {
+    'Pré-produção': pageStyles['status-PreProducao'], // Crie esta classe se precisar de cor
+    'Em Produção (Fase 1/6)': pageStyles['status-EmProducao'],
+    'Em Produção (Fase 3/6)': pageStyles['status-EmProducao'],
+    'Testes Finais': pageStyles['status-TestesFinais'],
+    'Concluído / Entregue': pageStyles['status-Concluido'],
+};
 
 /**
  * Exibe a lista de aeronaves e permite que administradores criem novos projetos.
@@ -26,7 +34,7 @@ function AircraftManagementPage() {
     // Hooks e Estados
     // ========================================================================
 
-    const { user, USER_LEVELS, logout } = useAuth();
+    const { user, USER_LEVELS } = useAuth();
     const navigate = useNavigate();
 
     const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>([]);
@@ -82,11 +90,6 @@ function AircraftManagementPage() {
         }
     };
 
-    // Realiza o logout do usuário e redireciona para a página de login.
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
 
     // ========================================================================
     // Renderização
@@ -102,7 +105,7 @@ function AircraftManagementPage() {
                 <h1>✈️ Aerocode - Gerenciamento de Aeronaves</h1>
                 <div className={pageStyles.userInfo}>
                     <span className={pageStyles.userName}>Usuário: {user.name}</span>
-                    <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button>
+                    {/* <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button> */}
                 </div>
             </header>
 
@@ -127,7 +130,7 @@ function AircraftManagementPage() {
                             <h3 className={pageStyles.cardTitle}>{a.model} ({a.id})</h3>
                             <p><strong>Tipo:</strong> {a.type}</p>
                             <p><strong>Cliente:</strong> {a.clientName || 'N/A'}</p>
-                            <p><strong>Status:</strong> <span className={pageStyles.statusBadge}>{a.status}</span></p>
+                            <p><strong>Status:</strong> <span className={`${pageStyles.statusBadge} ${statusClassMap[a.status] || ''}`}>{a.status}</span></p>
 
                             {a.canEdit && user.level !== 'operador' && (
                                 <span className={pageStyles.editTag}>Pode Editar</span>

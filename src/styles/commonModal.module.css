@@ -23,8 +23,8 @@
     background-color: white;
     padding: 25px 30px;
     border-radius: 8px;
-    width: 100%;
-    max-width: 500px;
+    /* width: 100%; */
+    max-width: 550px;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -96,7 +96,7 @@
 
 /* Estilo para o botão de cancelar ou secundário */
 .modalActions button[type="button"] {
-    background-color: #6c757d;
+    background-color: #0781ec;
     color: white;
 }
 

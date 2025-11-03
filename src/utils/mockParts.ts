@@ -55,3 +55,43 @@ export const updatePartStatus = (partId: number, newStatus: PartStatus): Part | 
     }
     return null;
 };
+
+/**
+ * Deleta uma peça do sistema com base no seu ID.
+ * @param partId - O ID da peça a ser deletada.
+ * @returns true se a exclusão foi bem-sucedida, false caso contrário.
+ */
+export const deletePart = (partId: number): boolean => {
+    const partIndex = mockPartsData.findIndex(p => p.id === partId);
+
+    if (partIndex !== -1) {
+        mockPartsData.splice(partIndex, 1);
+        console.log(`Peça com ID ${partId} deletada.`);
+        return true;
+    }
+
+    console.error(`Peça com ID ${partId} não encontrada para exclusão.`);
+    return false;
+};
+
+/**
+ * Atualiza os dados de uma peça existente (nome, fornecedor, tipo).
+ * @param partId - O ID da peça a ser atualizada.
+ * @param updatedData - Um objeto parcial com os novos dados.
+ * @returns A peça atualizada ou null se não for encontrada.
+ */
+export const updatePart = (partId: number, updatedData: Partial<Omit<Part, 'id' | 'aircraftId'>>): Part | null => {
+    const partIndex = mockPartsData.findIndex(p => p.id === partId);
+
+    if (partIndex !== -1) {
+        // Mescla os dados antigos com os novos dados fornecidos
+        const part = mockPartsData[partIndex];
+        Object.assign(part, updatedData);
+
+        console.log(`Peça com ID ${partId} atualizada.`);
+        return { ...part }; // Retorna uma cópia da peça atualizada
+    }
+
+    console.error(`Peça com ID ${partId} não encontrada para atualização.`);
+    return null;
+};

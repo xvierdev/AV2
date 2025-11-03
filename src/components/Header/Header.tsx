@@ -61,7 +61,7 @@ const Header: React.FC = () => {
 
             <div className={styles.userInfo}>
                 <Link to="/perfil" className={styles.welcomeText}>
-                    Olá, {user.name} ({user.levelName})
+                    Olá, {user.name} ({user.levelName}) | Editar Perfil
                 </Link>
 
                 <button

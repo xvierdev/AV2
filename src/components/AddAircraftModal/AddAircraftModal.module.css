@@ -1,62 +1,123 @@
+/* ======================================================================== */
+/* Estilos para o Modal de Adicionar Aeronave                               */
+/* ======================================================================== */
+
+/* O fundo escurecido que ocupa toda a tela para dar foco ao modal. */
 .modalOverlay {
     position: fixed;
+    /* Posiciona o elemento em relação à janela do navegador. */
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.6);
+    /* Cor preta com 60% de opacidade. */
     display: flex;
+    /* Habilita o Flexbox para centralização. */
     justify-content: center;
+    /* Centraliza o conteúdo (o modal) horizontalmente. */
     align-items: center;
+    /* Centraliza o conteúdo (o modal) verticalmente. */
     z-index: 1001;
+    /* Garante que o overlay fique acima de outros conteúdos da página. */
 }
 
+/* A "caixa" branca principal do modal que contém o formulário. */
 .modalContent {
     background-color: white;
     padding: 25px;
+    /* Espaçamento interno. */
     border-radius: 8px;
+    /* Bordas arredondadas. */
     width: 450px;
+    /* Largura fixa para o modal. */
     display: flex;
+    /* Habilita o Flexbox para organizar os elementos do formulário. */
     flex-direction: column;
+    /* Organiza os itens em uma coluna (um abaixo do outro). */
     gap: 15px;
+    /* Espaçamento entre cada item do formulário. */
 }
 
+/* Contêiner para os botões de ação (Salvar, Cancelar). */
 .modalActions {
     display: flex;
     justify-content: flex-end;
+    /* Alinha os botões à direita. */
     gap: 10px;
+    /* Espaçamento entre os botões. */
     margin-top: 10px;
+    /* Espaço acima da área de botões. */
 }
 
+/* Estilo padrão para todos os inputs e selects dentro do modal. */
 .modalContent input,
 .modalContent select {
     padding: 10px;
     border-radius: 4px;
     border: 1px solid #ccc;
     width: 100%;
+    /* Faz com que ocupem toda a largura do modal. */
     box-sizing: border-box;
+    /* Garante que o padding não aumente a largura total. */
 }
 
+/* Estilo padrão para todos os botões na área de ações. */
 .modalActions button {
     padding: 10px 15px;
     border-radius: 5px;
     border: none;
     cursor: pointer;
+    /* Muda o cursor para indicar que é clicável. */
 }
 
+/* Estilo específico para o botão principal de submissão (Salvar, Criar). */
 .modalActions button[type="submit"] {
     background-color: #007bff;
+    /* Azul primário. */
     color: white;
 }
 
+/* Estilo para as mensagens de erro de validação. */
 .error {
     color: #dc3545;
+    /* Vermelho para indicar erro. */
     font-size: 0.85em;
+    /* Fonte um pouco menor. */
     margin-top: -10px;
-    /* Puxa a mensagem para perto do input */
+    /* Margem negativa para aproximar a mensagem do input acima. */
 }
 
+/* Estilo para o campo de seleção múltipla (engenheiros). */
 .multiSelect {
     min-height: 100px;
-    /* Altura para mostrar várias opções */
+    /* Altura mínima para mostrar várias opções e indicar que é rolável. */
+}
+
+/* ======================================================================== */
+/* Estilos para Layout de Linha (Side-by-Side)                              */
+/* ======================================================================== */
+
+/* Contêiner que alinha dois ou mais grupos de formulário em uma única linha. */
+.formRow {
+    display: flex;
+    gap: 15px;
+    /* Espaçamento entre os grupos de formulário na linha. */
+}
+
+/* Agrupa um label e seu input correspondente para controle de layout. */
+.formGroup {
+    flex: 1;
+    /* Faz com que cada grupo se expanda igualmente para preencher o espaço. */
+    display: flex;
+    flex-direction: column;
+    /* Organiza o label e o input em uma coluna. */
+    gap: 15px;
+    /* Espaçamento entre o label e o input, corrigindo sobreposição. */
+}
+
+/* Ajuste específico para a margem da mensagem de erro dentro de um formGroup. */
+.formGroup .error {
+    margin-top: 4px;
+    /* Pequeno ajuste para garantir alinhamento visual. */
 }
