@@ -1,32 +1,44 @@
-// src/pages/ProfilePage.tsx
 import { useState, type FormEvent } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
-import { updatePassword } from '../utils/mockUsers'; // Importa a nova função
-import pageStyles from './ProfilePage.module.css'; // Criaremos este arquivo
 
+// Contexto
+import { useAuth } from '../context/useAuth';
+
+// Utilitários (Mocks)
+import { updatePassword } from '../utils/mockUsers';
+
+// Estilos
+import pageStyles from './ProfilePage.module.css';
+
+
+/**
+ * Permite que o usuário logado visualize seus dados e altere sua senha.
+ */
 function ProfilePage() {
+    // ========================================================================
+    // Hooks e Estados
+    // ========================================================================
+
     const { user, logout } = useAuth();
     const navigate = useNavigate();
 
-    // Estados para o formulário de mudança de senha
+    // Estados para o formulário de alteração de senha
+    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [oldPassword, setOldPassword] = useState('');
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    // Guarda de segurança, embora a rota seja protegida
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
+    // ========================================================================
+    // Handlers (Funções de Ação)
+    // ========================================================================
 
+    // Valida e submete o formulário de alteração de senha.
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');
         setSuccess('');
 
-        // Validações no front-end primeiro
         if (!oldPassword || !newPassword || !confirmPassword) {
             setError('Todos os campos de senha são obrigatórios.');
             return;
@@ -37,30 +49,35 @@ function ProfilePage() {
         }
 
         try {
-            const wasUpdated = updatePassword(user.id, oldPassword, newPassword);
+            const wasUpdated = updatePassword(user!.id, oldPassword, newPassword);
             if (wasUpdated) {
-                setSuccess('Senha atualizada com sucesso! Você será deslogado por segurança.');
+                setSuccess('Senha atualizada com sucesso! Você será desconectado por segurança.');
+
                 // Limpa os campos após o sucesso
                 setOldPassword('');
                 setNewPassword('');
                 setConfirmPassword('');
 
+                // Desconecta o usuário após 3 segundos para que ele possa ler a mensagem
                 setTimeout(() => {
                     logout();
                     navigate('/login');
                 }, 3000);
             }
         } catch (err) {
-            let errorMessage = 'Erro ao atualizar a senha.';
-
-            if (err instanceof Error) {
-                // Agora, dentro deste bloco, TypeScript sabe que err é do tipo Error
-                errorMessage = err.message;
-            }
-
+            // Captura o erro da lógica de mock para exibir uma mensagem específica
+            const errorMessage = (err instanceof Error) ? err.message : 'Erro ao atualizar a senha.';
             setError(errorMessage);
         }
     };
+
+    // ========================================================================
+    // Renderização
+    // ========================================================================
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
 
     return (
         <div className={pageStyles.container}>
@@ -80,7 +97,6 @@ function ProfilePage() {
                 <section>
                     <h3>Alterar Senha</h3>
                     <form onSubmit={handleSubmit} className={pageStyles.form}>
-                        {/* NOVO CAMPO AQUI */}
                         <div className={pageStyles.inputGroup}>
                             <label htmlFor="oldPassword">Senha Antiga:</label>
                             <input
@@ -115,8 +131,8 @@ function ProfilePage() {
                         {error && <p className={pageStyles.error}>{error}</p>}
                         {success && <p className={pageStyles.success}>{success}</p>}
 
-                        <button type="submit" className={pageStyles.button}>
-                            Salvar Nova Senha
+                        <button type="submit" className={pageStyles.button} disabled={!!success}>
+                            {success ? 'Aguarde...' : 'Salvar Nova Senha'}
                         </button>
                     </form>
                 </section>

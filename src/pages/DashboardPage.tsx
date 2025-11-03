@@ -28,7 +28,7 @@ interface DashboardStats {
 function DashboardPage() {
     // Hooks padrão
     const navigate = useNavigate();
-    const { user, logout, USER_LEVELS } = useAuth();
+    const { user, USER_LEVELS } = useAuth();
 
     // --- Hooks de Estado (Apenas useMemo, sem useState/useEffect para simplicidade) ---
 

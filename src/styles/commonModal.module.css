@@ -1,0 +1,114 @@
+/* ======================================================================== */
+/* Estilos Comuns para Modais                                               */
+/* Este arquivo centraliza a aparência de todos os pop-ups da aplicação.    */
+/* ======================================================================== */
+
+/* O fundo escurecido que cobre toda a tela */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.65);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    padding: 20px;
+}
+
+/* A "caixa" branca do modal que contém o formulário */
+.modalContent {
+    background-color: white;
+    padding: 25px 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo para o título dentro do modal */
+.modalContent h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #003366;
+    /* Azul escuro, combinando com o header */
+}
+
+/* Estilo para os labels dos campos do formulário */
+.modalContent .label {
+    font-weight: bold;
+    margin-bottom: -10px;
+    /* Reduz o espaço entre o label e o input */
+    font-size: 0.9em;
+    color: #333;
+}
+
+/* Estilo para inputs de texto e selects */
+.modalContent .input {
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+    /* Garante que padding não afete a largura total */
+    font-size: 1em;
+}
+
+/* Contêiner para os botões de ação (Salvar, Cancelar) */
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+/* Estilo genérico para os botões dentro do modal */
+.modalActions button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.modalActions button:active {
+    transform: scale(0.98);
+}
+
+/* Estilo para o botão de confirmação principal (Salvar, Criar, etc.) */
+.modalActions button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+}
+
+.modalActions button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para o botão de cancelar ou secundário */
+.modalActions button[type="button"] {
+    background-color: #6c757d;
+    color: white;
+}
+
+.modalActions button[type="button"]:hover {
+    background-color: #5a6268;
+}
+
+/* Estilo para pequenas dicas ou textos de ajuda no modal */
+.modalHint {
+    font-size: 0.85em;
+    color: #6c757d;
+    font-style: italic;
+    text-align: center;
+    margin-top: 5px;
+}

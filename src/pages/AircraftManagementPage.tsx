@@ -1,53 +1,68 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// Componentes
+import { AddAircraftModal } from '../components/AddAircraftModal/AddAircraftModal';
+
+// Contexto
 import { useAuth } from '../context/useAuth';
+
+// Tipos
+import type { AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
+
+// Utilitários (Mocks)
 import { getAircraftsForUser, addAircraft } from '../utils/mockAircrafts';
 import { getAllUsers } from '../utils/mockUsers';
-import { AddAircraftModal } from '../components/AddAircraftModal/AddAircraftModal';
-import type { AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
+
+// Estilos
 import pageStyles from './AircraftManagementPage.module.css';
 
+
+/**
+ * Exibe a lista de aeronaves e permite que administradores criem novos projetos.
+ */
 function AircraftManagementPage() {
-    // --- Hooks de Estado e Roteamento ---
+    // ========================================================================
+    // Hooks e Estados
+    // ========================================================================
+
     const { user, USER_LEVELS, logout } = useAuth();
     const navigate = useNavigate();
 
-    // Estado para a lista de aeronaves exibida na tela
     const [aircrafts, setAircrafts] = useState<AircraftWithPermission[]>([]);
-    // Estado para controlar a visibilidade do modal de criação
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // --- Lógica de Dados e Permissões ---
+    // ========================================================================
+    // Lógica de Dados e Permissões
+    // ========================================================================
 
-    // Carrega a lista de aeronaves quando o componente é montado ou o usuário muda
+    // Carrega a lista de aeronaves para o usuário logado ao montar o componente.
     useEffect(() => {
         if (user) {
             setAircrafts(getAircraftsForUser(user));
         }
     }, [user]);
 
-    // Otimiza o cálculo da lista de engenheiros para passar ao modal
+    // Memoriza a lista de engenheiros para passar ao modal de criação.
     const engineers = useMemo(() => {
         return getAllUsers().filter(u => u.level === USER_LEVELS.ENGINEER);
     }, [USER_LEVELS.ENGINEER]);
 
-    // Flags de permissão para limpar o JSX
+    // Flag de permissão para simplificar a renderização condicional no JSX.
     const isAdmin = user?.level === USER_LEVELS.ADMIN;
 
-    // --- Handlers (Funções de Ação) ---
+    // ========================================================================
+    // Handlers (Funções de Ação)
+    // ========================================================================
 
-    // Função passada para o modal, que será chamada no submit
+    // Adiciona uma nova aeronave à lista após submissão do modal.
     const handleAddAircraft = (data: NewAircraftData) => {
-        if (!user) return; // Guarda de segurança
+        if (!user) return;
 
         try {
             const addedAircraft = addAircraft(data, user.id);
-            // O criador (admin) sempre pode editar a aeronave que criou
             const newAircraftWithPermissions = { ...addedAircraft, canEdit: true };
-
-            // Atualiza o estado para a UI reagir instantaneamente
             setAircrafts(prevAircrafts => [...prevAircrafts, newAircraftWithPermissions]);
-
             alert(`Aeronave "${addedAircraft.model}" adicionada com sucesso!`);
         } catch (error) {
             alert("Ocorreu um erro ao adicionar a aeronave. Consulte o console.");
@@ -55,26 +70,28 @@ function AircraftManagementPage() {
         }
     };
 
-    // Navega para a página de detalhes da aeronave selecionada
+    // Navega para a página de detalhes da aeronave clicada.
     const handleSelectAircraft = (id: string) => {
         navigate(`/aeronaves/${id}`);
     };
 
-    // Navega para a página de gerenciamento de usuários
+    // Navega para a página de gerenciamento de funcionários.
     const handleManageUsers = () => {
         if (isAdmin) {
-            navigate('/usuarios'); // '/usuarios' é a rota oficial definida no App.tsx
+            navigate('/usuarios');
         }
     };
 
+    // Realiza o logout do usuário e redireciona para a página de login.
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    // --- Renderização ---
+    // ========================================================================
+    // Renderização
+    // ========================================================================
 
-    // Guarda de carregamento enquanto o usuário ainda não foi carregado
     if (!user) {
         return <div className={pageStyles.container}>Carregando informações...</div>;
     }
@@ -84,14 +101,12 @@ function AircraftManagementPage() {
             <header className={pageStyles.header}>
                 <h1>✈️ Aerocode - Gerenciamento de Aeronaves</h1>
                 <div className={pageStyles.userInfo}>
-                    {/* Reutilizando o Header global, esta parte é opcional mas pode ser útil */}
                     <span className={pageStyles.userName}>Usuário: {user.name}</span>
                     <button onClick={handleLogout} className={pageStyles.logoutButton}>Sair</button>
                 </div>
             </header>
 
             <div className={pageStyles.actionsBar}>
-                {/* Botões de ação disponíveis apenas para administradores */}
                 {isAdmin && (
                     <>
                         <button onClick={handleManageUsers} className={pageStyles.actionButton} style={{ backgroundColor: '#17a2b8' }}>
@@ -114,7 +129,6 @@ function AircraftManagementPage() {
                             <p><strong>Cliente:</strong> {a.clientName || 'N/A'}</p>
                             <p><strong>Status:</strong> <span className={pageStyles.statusBadge}>{a.status}</span></p>
 
-                            {/* Indicador visual de permissão */}
                             {a.canEdit && user.level !== 'operador' && (
                                 <span className={pageStyles.editTag}>Pode Editar</span>
                             )}
@@ -126,7 +140,6 @@ function AircraftManagementPage() {
                 </div>
             </main>
 
-            {/* O novo modal é renderizado aqui, passando as props necessárias */}
             {isAdmin && (
                 <AddAircraftModal
                     isOpen={isModalOpen}
