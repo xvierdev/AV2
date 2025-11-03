@@ -1,11 +1,13 @@
 import type { Aircraft, AircraftWithPermission, NewAircraftData } from '../types/AircraftTypes';
 import type { User } from '../types/UserTypes';
 
-let nextAircraftIdPart = 800; // Para gerar IDs únicos sequenciais
 
-/**
- * Dados de Aeronaves de Teste (Simulação de Banco de Dados)
- */
+// ========================================================================
+// Dados Mockados (Simulação de Banco de Dados)
+// ========================================================================
+
+let nextAircraftIdPart = 800;
+
 export const mockAircraftsData: Aircraft[] = [
   {
     id: 'A-123',
@@ -16,8 +18,8 @@ export const mockAircraftsData: Aircraft[] = [
     clientName: 'Azul Linhas Aéreas',
     deliveryDeadline: '2026-05-15',
     status: 'Em Produção (Fase 3/6)',
-    associatedEngineers: [2], // ID do Engenheiro 'eng'
-    createdBy: 1, // ID do 'admin'
+    associatedEngineers: [2],
+    createdBy: 1,
   },
   {
     id: 'B-456',
@@ -40,22 +42,31 @@ export const mockAircraftsData: Aircraft[] = [
     clientName: 'TAP Air Portugal',
     deliveryDeadline: '2027-01-20',
     status: 'Pré-produção',
-    associatedEngineers: [4], // ID do Engenheiro 'outroEng'
+    associatedEngineers: [4],
     createdBy: 1,
   }
 ];
 
+// ========================================================================
+// Funções de Acesso e Manipulação de Dados
+// ========================================================================
+
 /**
- * Retorna todas as aeronaves.
+ * Retorna todas as aeronaves cadastradas no sistema.
  */
 export const getAllAircrafts = (): Aircraft[] => {
   return mockAircraftsData;
 };
 
 /**
- * Retorna a lista de aeronaves com a flag de permissão de edição para o usuário logado.
- * @param user - O objeto do usuário logado.
- * @returns {AircraftWithPermission[]} - Lista de aeronaves com a flag 'canEdit'.
+ * Busca e retorna uma única aeronave pelo seu ID.
+ */
+export const getAircraftById = (id: string): Aircraft | undefined => {
+  return mockAircraftsData.find(a => a.id === id);
+};
+
+/**
+ * Retorna a lista de aeronaves com uma flag `canEdit` baseada nas permissões do usuário.
  */
 export const getAircraftsForUser = (user: User): AircraftWithPermission[] => {
   if (!user) return [];
@@ -65,26 +76,20 @@ export const getAircraftsForUser = (user: User): AircraftWithPermission[] => {
 
   return mockAircraftsData.map(aircraft => {
     let canEdit = false;
-
     if (isAdmin) {
       canEdit = true;
     } else if (isEngineer) {
       canEdit = aircraft.associatedEngineers.includes(user.id);
     }
-
     return { ...aircraft, canEdit };
   });
 };
 
 /**
- * Adiciona uma nova aeronave ao sistema.
- * @param aircraftData - Dados da nova aeronave, vindo do formulário.
- * @param creatorId - ID do administrador que está criando a aeronave.
- * @returns O objeto da aeronave criada.
+ * Cria uma nova aeronave e a adiciona à lista de dados.
  */
 export const addAircraft = (aircraftData: NewAircraftData, creatorId: number): Aircraft => {
   const newId = `D-${nextAircraftIdPart++}`;
-
   const newAircraft: Aircraft = {
     ...aircraftData,
     id: newId,
@@ -99,28 +104,11 @@ export const addAircraft = (aircraftData: NewAircraftData, creatorId: number): A
 };
 
 /**
- * Busca uma aeronave por seu ID.
- * @param id - O ID da aeronave a ser encontrada.
- * @returns A aeronave encontrada ou undefined.
+ * Atualiza os dados de uma aeronave existente com base no seu ID.
  */
-export const getAircraftById = (id: string): Aircraft | undefined => {
-  return mockAircraftsData.find(a => a.id === id);
-};
-
-/**
- * Atualiza os detalhes de uma aeronave específica.
- * @param id - O ID da aeronave a ser atualizada.
- * @param updatedData - Um objeto parcial com os dados a serem atualizados.
- * @returns A aeronave atualizada ou undefined se não for encontrada.
- */
-export const updateAircraftDetails = (
-  id: string,
-  updatedData: Partial<Aircraft>
-): Aircraft | undefined => {
+export const updateAircraftDetails = (id: string, updatedData: Partial<Aircraft>): Aircraft | undefined => {
   const index = mockAircraftsData.findIndex(a => a.id === id);
-
   if (index !== -1) {
-    // Mescla os dados atuais com os novos dados
     mockAircraftsData[index] = { ...mockAircraftsData[index], ...updatedData };
     console.log(`Aeronave ${id} atualizada.`);
     return mockAircraftsData[index];

@@ -1,7 +1,7 @@
 /**
  * Define os tipos de testes que podem ser realizados em uma aeronave.
  */
-export type TestType = 'Elétrico' | 'Hidrául-ico' | 'Aerodinâmico';
+export type TestType = 'Elétrico' | 'Hidráulico' | 'Aerodinâmico';
 
 /**
  * Define os possíveis resultados de um teste.

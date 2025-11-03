@@ -1,82 +1,66 @@
-// src/utils/mockTasks.ts
 import { type Task, type TaskStatus } from '../types/TaskTypes';
 
-// Lista de tarefas simuladas
-export const mockTasks: Task[] = [
+
+// ========================================================================
+// Dados Mockados (Simulação de Banco de Dados)
+// ========================================================================
+
+const mockTasksData: Task[] = [
     {
         id: 101,
         aircraftId: 'A-123',
         description: 'Verificação da fuselagem principal (Fase 1/6)',
-        responsibleUserId: 3, // Operador (op/123)
+        responsibleUserId: 3,
         responsibleUserName: 'Operador de Montagem',
         dueDate: '2025-11-15',
         status: 'Pendente',
-        creationDate: new Date().toISOString().split('T')[0],
+        creationDate: '2025-10-28',
         completionDate: null,
     },
     {
         id: 102,
         aircraftId: 'A-123',
         description: 'Instalação do motor 1 (Engenharia Elétrica)',
-        responsibleUserId: 2, // Engenheiro (eng/123)
+        responsibleUserId: 2,
         responsibleUserName: 'Engenheiro Chefe',
         dueDate: '2025-11-30',
         status: 'Em Andamento',
-        creationDate: new Date().toISOString().split('T')[0],
+        creationDate: '2025-10-25',
         completionDate: null,
     },
     {
         id: 103,
         aircraftId: 'B-456',
         description: 'Inspeção de qualidade do trem de pouso',
-        responsibleUserId: null, // Tarefa geral (Admin pode gerenciar)
+        responsibleUserId: null,
         responsibleUserName: 'Equipe de QA',
         dueDate: '2025-11-10',
         status: 'Concluída',
-        creationDate: new Date().toISOString().split('T')[0],
+        creationDate: '2025-10-20',
         completionDate: '2025-11-05',
     },
 ];
 
+// ========================================================================
+// Funções de Acesso e Manipulação de Dados
+// ========================================================================
+
 /**
- * 🎁 CORREÇÃO: Função Faltante para buscar TODAS as tarefas.
+ * Retorna todas as tarefas cadastradas no sistema.
  */
 export const getAllTasks = (): Task[] => {
-    return mockTasks;
+    return mockTasksData;
 };
 
 /**
- * Obtém todas as tarefas associadas a uma aeronave específica.
+ * Retorna todas as tarefas associadas a um ID de aeronave específico.
  */
 export const getTasksByAircraftId = (aircraftId: string): Task[] => {
-    return mockTasks.filter(task => task.aircraftId === aircraftId);
+    return mockTasksData.filter(task => task.aircraftId === aircraftId);
 };
 
 /**
- * Simula a atualização do status de uma tarefa.
- */
-export const updateTaskStatus = (taskId: number, newStatus: TaskStatus): Task | undefined => {
-    const taskIndex = mockTasks.findIndex(t => t.id === taskId);
-
-    if (taskIndex !== -1) {
-        // A data de conclusão é registrada apenas se o status mudar para 'Concluída'
-        const completionDate = newStatus === 'Concluída'
-            ? new Date().toISOString().split('T')[0]
-            : (newStatus === 'Pendente' ? null : mockTasks[taskIndex].completionDate); // Mantém a data se for 'Em Andamento', ou limpa se for 'Pendente'
-
-        mockTasks[taskIndex] = {
-            ...mockTasks[taskIndex],
-            status: newStatus,
-            completionDate: completionDate,
-        };
-
-        return mockTasks[taskIndex];
-    }
-    return undefined;
-};
-
-/**
- * Simula a criação de uma nova tarefa.
+ * Cria uma nova tarefa e a adiciona à lista de dados.
  */
 export const createNewTask = (
     aircraftId: string,
@@ -85,21 +69,37 @@ export const createNewTask = (
     responsibleUserName: string,
     dueDate: string,
 ): Task => {
-    // Simulação: Gera um novo ID
-    const newId = Math.max(...mockTasks.map(t => t.id), 100) + 1;
-
+    const newId = Math.max(...mockTasksData.map(t => t.id), 0) + 1;
     const newTask: Task = {
         id: newId,
-        aircraftId: aircraftId,
-        description: description,
-        responsibleUserId: responsibleUserId,
-        responsibleUserName: responsibleUserName,
-        dueDate: dueDate,
+        aircraftId,
+        description,
+        responsibleUserId,
+        responsibleUserName,
+        dueDate,
         status: 'Pendente',
-        creationDate: new Date().toISOString().split('T')[0], // Adicionando data de criação
+        creationDate: new Date().toISOString().split('T')[0],
         completionDate: null,
     };
-
-    mockTasks.push(newTask);
+    mockTasksData.push(newTask);
     return newTask;
+};
+
+/**
+ * Atualiza o status de uma tarefa e a data de conclusão, se aplicável.
+ */
+export const updateTaskStatus = (taskId: number, newStatus: TaskStatus): Task | undefined => {
+    const taskIndex = mockTasksData.findIndex(t => t.id === taskId);
+    if (taskIndex !== -1) {
+        const task = mockTasksData[taskIndex];
+        const isNowCompleted = newStatus === 'Concluída';
+
+        // Atualiza a data de conclusão apenas quando a tarefa é finalizada pela primeira vez.
+        // Se for reaberta e finalizada de novo, a data de conclusão é atualizada.
+        task.completionDate = isNowCompleted ? new Date().toISOString().split('T')[0] : null;
+        task.status = newStatus;
+
+        return { ...task };
+    }
+    return undefined;
 };

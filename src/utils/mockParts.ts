@@ -1,6 +1,12 @@
 import type { Part, PartStatus, NewPartData } from '../types/PartTypes';
 
-let nextPartId = 6; // Começa depois dos dados iniciais
+
+// ========================================================================
+// Dados Mockados (Simulação de Banco de Dados)
+// ========================================================================
+
+// Variável para gerar IDs únicos para novas peças.
+let nextPartId = 6;
 
 const mockPartsData: Part[] = [
     // Peças para a Aeronave A320-001
@@ -13,6 +19,10 @@ const mockPartsData: Part[] = [
     { id: 5, aircraftId: 'E195-002', name: 'Estrutura da Fuselagem', type: 'Nacional', supplier: 'Embraer Aeroestruturas', status: 'Pronta para Uso' },
 ];
 
+// ========================================================================
+// Funções de Acesso e Manipulação de Dados
+// ========================================================================
+
 /**
  * Retorna todas as peças associadas a um ID de aeronave específico.
  */
@@ -21,7 +31,7 @@ export const getPartsByAircraftId = (aircraftId: string): Part[] => {
 };
 
 /**
- * Adiciona uma nova peça ao sistema.
+ * Adiciona uma nova peça à lista de dados da aeronave correspondente.
  */
 export const addPart = (aircraftId: string, partData: NewPartData): Part => {
     const newPart: Part = {
@@ -35,13 +45,13 @@ export const addPart = (aircraftId: string, partData: NewPartData): Part => {
 };
 
 /**
- * Atualiza o status de uma peça específica.
+ * Atualiza o status de uma peça específica com base no seu ID.
  */
 export const updatePartStatus = (partId: number, newStatus: PartStatus): Part | null => {
     const partIndex = mockPartsData.findIndex(p => p.id === partId);
     if (partIndex !== -1) {
         mockPartsData[partIndex].status = newStatus;
-        return { ...mockPartsData[partIndex] }; // Retorna uma cópia
+        return { ...mockPartsData[partIndex] };
     }
     return null;
 };
