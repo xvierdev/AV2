@@ -10,6 +10,10 @@ O **Aerocode** é um sistema corporativo crucial para o gerenciamento e acompanh
 
 O sistema é construído como uma **Single Page Application (SPA)**, garantindo uma experiência de usuário fluida e responsiva, com a robustez e segurança fornecida pela tipagem estática do **TypeScript**.
 
+### 🖼️ [wireframe de baixa fidelidade](./docs/wireframe%20de%20baixa%20fidelidade.pdf)
+### 🖥️ [wireframe de fluxo de usuário](./docs/diagrama%20de%20fluxo%20do%20usuário.pdf)
+### 📜 [relatório completo](./docs/AV2_RELATORIO.pdf)
+
 ### 🎯 1.1. Objetivos Estratégicos
 
 * **Usabilidade Aprimorada:** Substituir a interface CLI por uma GUI amigável, tornando o sistema acessível a um público técnico, mas com maior facilidade de uso.
@@ -52,8 +56,8 @@ Certifique-se de que você possui o **Node.js** (versão LTS recomendada) e o **
 
 1.  **Clone o Repositório:**
     ```bash
-    git clone [URL_DO_SEU_REPOSITORIO]
-    cd Aerocode
+    git clone https://github.com/xvierdev/AV2
+    cd AV2
     ```
 
 2.  **Instale as Dependências:**
@@ -64,7 +68,7 @@ Certifique-se de que você possui o **Node.js** (versão LTS recomendada) e o **
 
 ### 3.3. Executando o Servidor de Desenvolvimento
 
-Para compilar o código, iniciar o servidor de desenvolvimento local e habilitar o Hot Module Replacement (HMR):
+
 
 ```bash
 npm run dev
