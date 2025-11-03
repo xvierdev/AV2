@@ -1,3 +1,6 @@
+/**
+ * Define os possíveis status de uma aeronave durante seu ciclo de produção.
+ */
 export type AircraftStatus =
     'Pré-produção' |
     'Em Produção (Fase 1/6)' |
@@ -5,26 +8,38 @@ export type AircraftStatus =
     'Testes Finais' |
     'Concluído / Entregue';
 
-// 1. ATUALIZAÇÃO DA INTERFACE PRINCIPAL
+/**
+ * Define a estrutura principal de dados para uma aeronave no sistema.
+ */
 export interface Aircraft {
     id: string;
     model: string;
-    type: string; // Pode ser 'Comercial', 'Militar'
+    type: string;
     capacity: number;
     range: number;
     clientName?: string;
     deliveryDeadline?: string;
     status: AircraftStatus;
     associatedEngineers: number[];
-    createdBy: number; // ID do admin que criou o projeto
+    createdBy: number;
 }
 
+/**
+ * Estende a interface `Aircraft` adicionando uma flag de permissão
+ * para facilitar a renderização condicional na UI.
+ */
 export interface AircraftWithPermission extends Aircraft {
     canEdit: boolean;
 }
 
-// 2. TIPO NewAircraftData CORRIGIDO
-// Usamos Omit para remover os campos que serão gerados automaticamente.
-// Isso garante que todos os outros campos de 'Aircraft' sejam herdados corretamente.
+/**
+ * Define o tipo de dados para a criação de uma nova aeronave,
+ * omitindo campos que são gerados automaticamente pelo sistema.
+ */
 export type NewAircraftData = Omit<Aircraft, 'id' | 'status' | 'createdBy'>;
+
+/**
+ * Define o tipo para os dados de edição de uma aeronave,
+ * tornando todas as suas propriedades opcionais.
+ */
 export type EditableAircraftData = Partial<Aircraft>;

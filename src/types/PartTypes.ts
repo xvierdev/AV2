@@ -1,19 +1,27 @@
-// Define os possíveis status de uma peça, conforme o escopo do projeto.
+/**
+ * Define os possíveis status de uma peça em seu ciclo de suprimento.
+ */
 export type PartStatus = 'Em Produção' | 'Em Transporte' | 'Pronta para Uso';
 
-// Define os tipos de peça.
+/**
+ * Define a origem de uma peça (nacional ou importada).
+ */
 export type PartType = 'Nacional' | 'Importada';
 
-// A interface principal para um objeto Peça (Part)
+/**
+ * Define a estrutura principal de dados para uma peça no sistema.
+ */
 export interface Part {
     id: number;
-    aircraftId: string; // ID da aeronave à qual a peça pertence
-    name: string;       // Nome da peça (ex: "Turbina Rolls-Royce Trent 7000")
-    type: PartType;     // Nacional ou Importada
-    supplier: string;   // Fornecedor (ex: "Rolls-Royce")
-    status: PartStatus; // O status atual da peça
+    aircraftId: string;
+    name: string;
+    type: PartType;
+    supplier: string;
+    status: PartStatus;
 }
 
-// Tipo de dado para o formulário de criação de uma nova peça.
-// Omitimos 'id' e 'aircraftId' pois serão gerados/fornecidos automaticamente.
+/**
+ * Define o tipo de dados para a criação de uma nova peça,
+ * omitindo campos que são gerados automaticamente pelo sistema.
+ */
 export type NewPartData = Omit<Part, 'id' | 'aircraftId'>;

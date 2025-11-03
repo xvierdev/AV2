@@ -1,38 +1,45 @@
-// src/types/UserTypes.ts
-
-// Define a lista de níveis de usuário no sistema
+/**
+ * Define os possíveis níveis de permissão de um usuário no sistema.
+ */
 export type UserLevel = 'operador' | 'engenheiro' | 'administrador';
 
-// Define a hierarquia de acesso, onde o índice mais baixo (0) tem o maior acesso
-// Essa lista é usada na função hasPermission.
-// ORDEM: OPERADOR (maior índice) < ENGENHEIRO < ADMINISTRADOR (menor índice)
+/**
+ * Define a hierarquia de acesso, onde o índice mais baixo (0) representa
+ * o maior nível de permissão. Utilizado para comparações de autorização.
+ */
 export const ACCESS_HIERARCHY: UserLevel[] = [
-  'administrador', // Índice 0
-  'engenheiro',    // Índice 1
-  'operador',      // Índice 2
+  'administrador',
+  'engenheiro',
+  'operador',
 ];
 
-// Tipo para o objeto User que estará no contexto
+/**
+ * Define a estrutura principal de dados para um usuário no sistema.
+ */
 export interface User {
   id: number;
   username: string;
   password?: string;
   name: string;
-  level: UserLevel;      // Ex: 'administrador'
-  levelName: string;     // Ex: 'Administrador'
-
-  // 💡 CORREÇÃO FINAL: Adicionando a propriedade usada no mockUsers
-  associatedAircrafts: string[]; // Lista de IDs de aeronaves
+  level: UserLevel;
+  levelName: string;
+  associatedAircrafts: string[];
 }
 
-// Tipo para os níveis de acesso (usado para auto-completar)
+/**
+ * Define um objeto de constantes para os níveis de usuário,
+ * facilitando o uso e evitando erros de digitação.
+ */
 export interface UserLevels {
   ADMIN: 'administrador';
   ENGINEER: 'engenheiro';
   OPERATOR: 'operador';
 }
 
-// Tipo para o Contexto de Autenticação
+/**
+ * Define a estrutura do objeto de contexto de autenticação que será
+ * compartilhado com os componentes da aplicação.
+ */
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -42,5 +49,8 @@ export interface AuthContextType {
   hasPermission: (requiredLevel: UserLevel) => boolean;
 }
 
-// O tipo UserWithoutPassword agora inclui associatedAircrafts implicitamente
+/**
+ * Define um tipo de usuário que omite o campo `password`,
+ * ideal para exibição segura de dados na interface.
+ */
 export type UserWithoutPassword = Omit<User, 'password'>;

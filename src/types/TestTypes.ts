@@ -1,19 +1,27 @@
-// Define os tipos de testes que podem ser executados.
-export type TestType = 'Elétrico' | 'Hidráulico' | 'Aerodinâmico';
+/**
+ * Define os tipos de testes que podem ser realizados em uma aeronave.
+ */
+export type TestType = 'Elétrico' | 'Hidrául-ico' | 'Aerodinâmico';
 
-// Define os possíveis resultados de um teste.
+/**
+ * Define os possíveis resultados de um teste.
+ */
 export type TestResult = 'Aprovado' | 'Reprovado';
 
-// A interface principal para um registro de Teste
+/**
+ * Define a estrutura principal de dados para um registro de teste no sistema.
+ */
 export interface Test {
     id: number;
-    aircraftId: string;   // ID da aeronave onde o teste foi realizado
-    type: TestType;       // O tipo de teste
-    result: TestResult;   // O resultado do teste
-    datePerformed: string; // Data no formato YYYY-MM-DD
-    notes?: string;       // Notas opcionais do engenheiro
+    aircraftId: string;
+    type: TestType;
+    result: TestResult;
+    datePerformed: string;
+    notes?: string;
 }
 
-// Tipo de dado para o formulário de registro de um novo teste.
-// Omitimos 'id', 'aircraftId', e 'datePerformed' pois serão gerados automaticamente.
+/**
+ * Define o tipo de dados para a criação de um novo registro de teste,
+ * omitindo campos que são gerados automaticamente pelo sistema.
+ */
 export type NewTestData = Omit<Test, 'id' | 'aircraftId' | 'datePerformed'>;
